@@ -1,0 +1,2 @@
+# Shobhit TODO: Check if this is right
+ros2 launch realsense2_camera rs_launch.py pointcloud.enable:=false align_depth.enable:=true rgb_camera.color_profile:=1280x720x15 depth_module.depth_profile:=1280x720x15 pointcloud.stream_filter:=1 align_depth.enable:=true enable_gyro:=false depth_module.infra_profile:=1280x720x15 enable_infra1:=true enable_infra2:=true camera_name:=cam_watch serial_no:=_419222302001 camera_namespace:=/bed_side_cam

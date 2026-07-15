@@ -1,0 +1,24 @@
+[Unit]
+Description=RGT Desk Frontend
+After=network.target
+
+[Service]
+User=mfi
+WorkingDirectory=/home/mfi/repos/rgt_desk/rgt_desk_frontend
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+
+# 1. This lets NPM find NODE when it runs
+Environment="PATH=/home/mfi/.nvm/versions/node/v24.18.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+# 2. We MUST use absolute paths here so systemd can launch npm
+ExecStartPre=/home/mfi/.nvm/versions/node/v24.18.0/bin/npm install
+ExecStartPre=/home/mfi/.nvm/versions/node/v24.18.0/bin/npm run build
+ExecStart=/home/mfi/.nvm/versions/node/v24.18.0/bin/npm run preview -- --port 80 --host 192.168.19.10
+
+Restart=always
+# Give the service more time to start up since 'npm install' and 'build' happen on every startup
+TimeoutStartSec=120
+
+[Install]
+WantedBy=multi-user.target
