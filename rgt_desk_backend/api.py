@@ -40,6 +40,10 @@ def start_process(req: StartProcessRequest):
     elif req.name == "bed_side_audio":
         command = "../process_scripts/bed_side_audio.sh"
         tmux.start_process(req.name, command)
+    elif req.name == "gripper":
+        use_mock_hardware = bool((req.params or {}).get("use_mock_hardware", False))
+        command = f"../process_scripts/gripper.sh {use_mock_hardware}"
+        tmux.start_process(req.name, command)
     elif req.name == "panda":
         command = "../process_scripts/panda.sh"
         tmux.start_process(req.name, command)
@@ -70,6 +74,8 @@ def stop_process(req: StopProcessRequest):
     elif req.name == "bed_side_audio":
         tmux.stop_process(req.name)
     elif req.name == "panda":
+        tmux.stop_process(req.name)
+    elif req.name == "gripper":
         tmux.stop_process(req.name)
     elif req.name == "space_panda_link":
         tmux.stop_process(req.name)

@@ -21,6 +21,9 @@ export const useStore = defineStore('store', {
         use_mock_hardware: false,
         use_ft_sensor: true,
       },
+      gripper: {
+        use_mock_hardware: false,
+      },
       spacemouse: {
         ns: "",
       },

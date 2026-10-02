@@ -20,6 +20,7 @@ class ProcessMonitor():
                 "spacemouse": "stopped",
                 "panda": "stopped",
                 "space_panda_link": "stopped",
+                "gripper": "stopped",
                 }
         self.stop_event = threading.Event()
         self.ur20_error = False
