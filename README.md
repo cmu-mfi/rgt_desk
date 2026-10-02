@@ -1,14 +1,6 @@
 # rgt_desk
 Absolutely life-changing dashboard experience unlike anything you have ever seen before. Truly eye-opening. Let's grind!
 
-![Image](assets/main.png)
-
-![Image](assets/sensors.png)
-
-![Image](assets/utilities.png)
-
-![Image](assets/space_panda.png)
-
 # Dependencies
 Make sure you have a recent version of nodejs installed. I would recommend using nvm like this:
 ```bash

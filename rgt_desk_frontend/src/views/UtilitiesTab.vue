@@ -30,6 +30,15 @@ const pins = [
   { label: 'Pin 5', value: 5 },
   { label: 'Pin 6', value: 6 },
   { label: 'Pin 7', value: 7 },
+  { label: 'Pin 8', value: 8 },
+  { label: 'Pin 9', value: 9 },
+  { label: 'Pin 10', value: 10 },
+  { label: 'Pin 11', value: 11 },
+  { label: 'Pin 12', value: 12 },
+  { label: 'Pin 13', value: 13 },
+  { label: 'Pin 14', value: 14 },
+  { label: 'Pin 15', value: 15 },
+  { label: 'Pin 16', value: 16 },
 ];
 const states = [
   { label: 'Low', value: 0 },
