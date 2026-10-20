@@ -26,7 +26,7 @@ defineEmits(['update:modelValue']);
     <select
       :value="modelValue"
       @change="$emit('update:modelValue', $event.target.value)"
-      class="bg-gray-800 border border-gray-600 text-gray-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-1.5 w-full max-w-[150px] outline-none transition-colors cursor-pointer"
+      class="bg-gray-800 border border-gray-600 text-gray-200 text-base sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 sm:p-1.5 w-full max-w-[150px] outline-none transition-colors cursor-pointer"
     >
       <option 
         v-for="option in options" 

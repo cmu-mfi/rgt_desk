@@ -48,12 +48,12 @@ const statusColor = computed(() => STATUS_COLORS[currentStatus.value] || STATUS_
       </div>
     </div>
     
-    <div class="flex-1 px-4 py-1">
-      <slot></slot> 
+    <div class="flex-1 min-h-0 overflow-y-auto px-4 py-1">
+      <slot></slot>
     </div>
 
     <div class="flex gap-3 w-full px-4 py-2 border-t border-gray-600">
-      <button @click="emit('execute')" class="flex-1 px-4 py-1.5 text-sm font-semibold text-gray-400 hover:text-blue-400 active:text-blue-400 border-2 border-gray-500 hover:border-blue-500/40 active:border-blue-500/40 rounded-md transition">
+      <button @click="emit('execute')" class="flex-1 px-4 py-2.5 sm:py-1.5 text-sm font-semibold text-gray-400 hover:text-blue-400 active:text-blue-400 border-2 border-gray-500 hover:border-blue-500/40 active:border-blue-500/40 rounded-md transition">
         Execute
       </button>
     </div>

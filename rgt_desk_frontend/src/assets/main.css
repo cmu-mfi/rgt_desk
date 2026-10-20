@@ -1,5 +1,5 @@
 @import "tailwindcss";
 
 body {
-  @apply bg-gray-900 text-white m-0 p-0 h-screen w-screen overflow-hidden;
+  @apply bg-gray-900 text-white m-0 p-0 h-dvh w-full;
 }

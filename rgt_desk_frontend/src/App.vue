@@ -16,20 +16,20 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="h-screen w-screen flex flex-col bg-black text-gray-200 font-sans">
+  <div class="h-dvh w-full flex flex-col bg-black text-gray-200 font-sans">
     <header class="flex items-center justify-between px-4 py-2 bg-black border-b-1 border-gray-700 backdrop-blur-md">
       <div class="flex items-center gap-3">
         <div class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
-        <h1 class="text-xl font-bold tracking-tight">RGT Desk</h1>
+        <h1 class="text-lg sm:text-xl font-bold tracking-tight">RGT Desk</h1>
       </div>
       
-      <nav class="flex bg-black p-1 rounded-xl border border-gray-800 text-gray-500">
+      <nav class="flex flex-nowrap bg-black p-1 rounded-xl border border-gray-800 text-gray-500">
         <RouterLink 
           to="/main" 
           class="nav-link"
           exact-active-class="bg-gray-700 text-white"
         >
-          <LayoutDashboard :size="18" /> <span>Main</span>
+          <LayoutDashboard :size="18" /> <span class="hidden sm:inline">Main</span>
         </RouterLink>
 
         <RouterLink 
@@ -37,7 +37,7 @@ onUnmounted(() => {
           class="nav-link"
           exact-active-class="bg-gray-700 text-white"
         >
-          <Activity :size="18" /> <span>Sensors</span>
+          <Activity :size="18" /> <span class="hidden sm:inline">Sensors</span>
         </RouterLink>
         
         <RouterLink 
@@ -45,7 +45,7 @@ onUnmounted(() => {
           class="nav-link"
           exact-active-class="bg-gray-700 text-white"
         >
-          <Toolbox :size="18" /> <span>Utilities</span>
+          <Toolbox :size="18" /> <span class="hidden sm:inline">Utilities</span>
         </RouterLink>
 
         <RouterLink 
@@ -53,12 +53,12 @@ onUnmounted(() => {
           class="nav-link"
           exact-active-class="bg-gray-700 text-white"
         >
-          <Panda :size="18" /> <span>Space Panda</span>
+          <Panda :size="18" /> <span class="hidden sm:inline">Space Panda</span>
         </RouterLink>
       </nav>
     </header>
 
-    <main class="flex-1 overflow-hidden relative">
+    <main class="flex-1 min-h-0 overflow-y-auto md:overflow-hidden relative">
       <router-view v-slot="{ Component, route }"> 
         <transition name="fade" mode="out-in">
         <component :is="Component" :key="route.path" /> 
@@ -76,7 +76,7 @@ onUnmounted(() => {
 }
 
 .nav-link {
-  @apply flex items-center gap-2 px-5 py-2 rounded-lg transition-all duration-200 text-sm font-medium;
+  @apply flex items-center justify-center gap-2 px-3 py-2.5 sm:px-5 sm:py-2 rounded-lg transition-all duration-200 text-sm font-medium;
 }
 
 .nav-link:hover {
