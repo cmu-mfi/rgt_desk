@@ -1,22 +1,38 @@
 # rgt_desk
 Absolutely life-changing dashboard experience unlike anything you have ever seen before. Truly eye-opening. Let's grind!
 
+![Image](assets/main.png)
+
+![Image](assets/sensors.png)
+
+![Image](assets/utilities.png)
+
+![Image](assets/space_panda.png)
+
+A dashboard for starting/stopping robot processes and calling robot services. A Vue 3 frontend talks to a FastAPI backend, which manages the ROS 2 (Jazzy) processes as tmux windows in a session named `rgt`. Both are run as systemd services.
+
 # Dependencies
-Make sure you have a recent version of nodejs installed. I would recommend using nvm like this:
+
+- **ROS 2 Jazzy** — the backend imports `rclpy`, `ur_dashboard_msgs`, and `controller_manager_msgs`, which come from the ROS install, and it sources `~/repos/ros2_ws/install/setup.bash` at startup, so that workspace must exist on the target machine.
+- **tmux** — managed processes run as windows in the `rgt` tmux session.
+- **Python 3** with the `venv` module.
+- **Node.js** `^22.18.0 || >=24.12.0`. Recommended via nvm:
 ```bash
 nvm install 24
 ```
 
 # Install
 
+The systemd unit files hardcode `User=mfi` and the install path `/home/mfi/repos/rgt_desk`, so on the target machine clone the repo to that location as that user. Everything below assumes the repo is at `~/repos/rgt_desk`.
+
 1. Clone this repo:
 ```bash
-git clone https://github.com/alexmnr/rgt_desk.git
+git clone https://github.com/alexmnr/rgt_desk.git ~/repos/rgt_desk
 ```
 
-2. Run the install script:
+2. Run the install script (needs sudo). It creates the backend virtualenv and installs its Python dependencies, installs the frontend dependencies and builds it, symlinks the unit files into `/etc/systemd/system`, then enables and starts both services:
 ```bash
-cd rgt_desk && ./install.sh
+cd ~/repos/rgt_desk && ./install.sh
 ```
 
 3. Check the status of the frontend and backend:
@@ -25,9 +41,54 @@ sudo systemctl status rgt_desk_backend.service
 sudo systemctl status rgt_desk_frontend.service
 ```
 
-# Restart
-After for changes in the code base to be reflected on the dashboard run these commands:
+Note: the backend service sets `ROS_DOMAIN_ID=19`. If your robots use a different domain, edit `systemd_services/rgt_desk_backend.service`, then re-run `./install.sh` (or re-symlink manually and `sudo systemctl daemon-reload`).
+
+# Run
+
+- **Dashboard:** http://192.168.19.10/ — the frontend serves on port 80 and reaches the backend API on port 8000 of the same host.
+- **Follow service logs:**
 ```bash
+journalctl -u rgt_desk_backend.service -f
+journalctl -u rgt_desk_frontend.service -f
+```
+- **Watch the managed processes:** `tmux attach -t rgt` (Ctrl-b n to switch windows).
+
+### Running without systemd (development)
+
+Backend — run from inside `rgt_desk_backend/` (imports are flat and process scripts are invoked via relative paths), with the ROS environment sourced:
+```bash
+cd ~/repos/rgt_desk/rgt_desk_backend
+source .venv/bin/activate
+source /opt/ros/jazzy/setup.bash
+source ~/repos/ros2_ws/install/setup.bash
+uvicorn main:app --host 0.0.0.0 --port 8000
+```
+
+Frontend — hot-reload dev server:
+```bash
+cd ~/repos/rgt_desk/rgt_desk_frontend
+npm install
+npm run dev
+```
+
+# Update
+
+The frontend service runs `npm install` and `npm run build` on every start, so no manual build is needed — a restart picks up all changes. Startup can take up to 2 minutes while it rebuilds.
+
+```bash
+cd ~/repos/rgt_desk
+git pull
 sudo systemctl restart rgt_desk_backend.service
 sudo systemctl restart rgt_desk_frontend.service
+```
+
+If dependencies changed (`requirements.txt`, `package.json`), the restart handles the reinstall automatically.
+
+Adding a new process or service to the dashboard touches four places: a script in `process_scripts/` or `service_scripts/`, a branch in `rgt_desk_backend/api.py`, an entry in `rgt_desk_backend/process_monitor.py` (processes only), and a panel in `rgt_desk_frontend/src/config/panels.json`. See `AGENTS.md` for details.
+
+# Uninstall
+
+Stops and disables both services, removes the unit files, and deletes the venv, `node_modules`, and `dist`:
+```bash
+cd ~/repos/rgt_desk && ./uninstall.sh
 ```
