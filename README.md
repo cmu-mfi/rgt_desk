@@ -84,7 +84,50 @@ sudo systemctl restart rgt_desk_frontend.service
 
 If dependencies changed (`requirements.txt`, `package.json`), the restart handles the reinstall automatically.
 
-Adding a new process or service to the dashboard touches four places: a script in `process_scripts/` or `service_scripts/`, a branch in `rgt_desk_backend/api.py`, an entry in `rgt_desk_backend/process_monitor.py` (processes only), and a panel in `rgt_desk_frontend/src/config/panels.json`. See `AGENTS.md` for details.
+### Adding a new process or service
+
+The name is the glue: the script name, the backend branch, the status entry, and the panel `id` must all match (e.g. `lidar` below).
+
+**1. Add the shell script** and make it executable (`chmod +x`). Dashboard params are passed as positional shell arguments (`$1`, `$2`, ...):
+
+```bash
+# process_scripts/lidar.sh — long-running: gets its own tmux window in the `rgt` session
+ros2 launch sick_scan sick_scan.launch.py ns:=lidar
+```
+```bash
+# service_scripts/grip.sh — one-shot: runs and exits
+ros2 service call /$1/grip robot_manager_interfaces/srv/Grip "{force: $2}"
+```
+
+**2. Add a backend branch** in `rgt_desk_backend/api.py` — in `start_process`/`stop_process` for processes, or in `execute_service` for services. This is where params become script arguments:
+
+```python
+# start_process (and the same name check in stop_process)
+elif req.name == "lidar":
+    command = "../process_scripts/lidar.sh"
+    tmux.start_process(req.name, command)
+
+# execute_service
+elif req.name == "grip":
+    command = f"../service_scripts/grip.sh {req.params['ns']} {req.params['force']}"
+    subprocess.run(command, shell=True, capture_output=False, text=False)
+```
+
+**3. Add the name to the `status` dict** in `rgt_desk_backend/process_monitor.py` (processes only — services don't need this). A process only shows `running` once its tmux window exists *and* a matching ROS node is visible, so launch your nodes with the process name in their namespace/name.
+
+**4. Add a panel** in `rgt_desk_frontend/src/config/panels.json` under the right tab. Param `key`s must match the `req.params[...]` keys read in `api.py`:
+
+```json
+{ "type": "process", "id": "lidar", "title": "Lidar", "params": [] },
+{ "type": "service", "id": "grip", "title": "Grip", "params": [
+  { "key": "ns", "type": "select", "label": "Robot", "options": "robots" },
+  { "key": "force", "type": "slider", "label": "Force", "min": 0.0, "max": 1.0, "step": 0.1, "default": 0.5 }
+]}
+```
+
+Param types: `toggle`, `slider` (`min`/`max`/`step`), and `select` (`options` is either the name of a shared option set defined in `panels.json`, like `robots`, or an inline `[{label, value}]` array). The panel's `default` fields become the store's initial values. No other frontend code is needed — the card, its controls, and its defaults are all generated from the config.
+
+**5. Restart both services** (as shown above) to pick up the backend and frontend changes.
 
 # Uninstall
 
