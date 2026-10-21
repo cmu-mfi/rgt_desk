@@ -16,7 +16,7 @@ A dashboard for starting/stopping robot processes and calling robot services. A 
 - **ROS 2 Jazzy** — the backend imports `rclpy`, `ur_dashboard_msgs`, and `controller_manager_msgs`, which come from the ROS install, and it sources `~/repos/ros2_ws/install/setup.bash` at startup, so that workspace must exist on the target machine.
 - **tmux** — managed processes run as windows in the `rgt` tmux session.
 - **Python 3** with the `venv` module.
-- **Node.js** `^22.18.0 || >=24.12.0`. Recommended via nvm:
+- **Node.js** `^22.18.0 || >=24.12.0` — nvm or a system package both work; `./install.sh` makes the active one visible to systemd. Recommended via nvm:
 ```bash
 nvm install 24
 ```
@@ -30,7 +30,7 @@ The systemd unit files hardcode `User=mfi` and the install path `/home/mfi/repos
 git clone https://github.com/alexmnr/rgt_desk.git ~/repos/rgt_desk
 ```
 
-2. Run the install script (needs sudo). It creates the backend virtualenv and installs its Python dependencies, installs the frontend dependencies and builds it, symlinks the unit files into `/etc/systemd/system`, then enables and starts both services:
+2. Run the install script (needs sudo). It creates the backend virtualenv and installs its Python dependencies, links the active `node`/`npm` into `/usr/local/bin` so the systemd unit can find them regardless of how Node was installed, installs the frontend dependencies and builds it, symlinks the unit files into `/etc/systemd/system`, then enables and starts both services:
 ```bash
 cd ~/repos/rgt_desk && ./install.sh
 ```
@@ -45,7 +45,7 @@ Note: the backend service sets `ROS_DOMAIN_ID=19`. If your robots use a differen
 
 # Run
 
-- **Dashboard:** http://192.168.19.10/ — the frontend serves on port 80 and reaches the backend API on port 8000 of the same host.
+- **Dashboard:** http://<host-ip>/ — the frontend serves on port 80 (all interfaces) and reaches the backend API on port 8000 of the same host. Both services bind to `0.0.0.0`, so any IP or hostname assigned to the machine works.
 - **Follow service logs:**
 ```bash
 journalctl -u rgt_desk_backend.service -f

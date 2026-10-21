@@ -16,6 +16,11 @@ echo "Backend installation complete!"
 cd ..
 # Frontend
 echo "Setting up Frontend..."
+# Link the active node and npm into /usr/local/bin so the systemd unit can
+# launch them regardless of how node is installed (nvm version, system package)
+NODE_BIN=$(command -v node)
+sudo ln -sf "$NODE_BIN" /usr/local/bin/node
+sudo ln -sf "$(dirname "$NODE_BIN")/npm" /usr/local/bin/npm
 cd rgt_desk_frontend
 npm install
 npm run build
