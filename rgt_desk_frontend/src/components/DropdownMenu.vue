@@ -1,4 +1,6 @@
 <script setup>
+import { ChevronDown } from '@lucide/vue';
+
 defineProps({
   modelValue: {
     type: [String, Number],
@@ -20,21 +22,24 @@ defineEmits(['update:modelValue']);
 
 <template>
   <div class="flex items-center justify-between gap-3 py-2">
-    <label class="text-sm font-medium text-gray-300 whitespace-nowrap">
+    <label class="text-[13px] font-medium text-zinc-300 whitespace-nowrap">
       {{ label }}
     </label>
-    <select
-      :value="modelValue"
-      @change="$emit('update:modelValue', $event.target.value)"
-      class="bg-gray-800 border border-gray-600 text-gray-200 text-base sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 sm:p-1.5 w-full max-w-[150px] outline-none transition-colors cursor-pointer"
-    >
-      <option 
-        v-for="option in options" 
-        :key="option.value" 
-        :value="option.value"
+    <div class="relative w-full max-w-[160px]">
+      <select
+        :value="modelValue"
+        @change="$emit('update:modelValue', $event.target.value)"
+        class="w-full appearance-none bg-zinc-900 border border-hairline text-zinc-200 font-mono text-xs px-2 py-1.5 pr-7 outline-none focus:border-accent transition-colors cursor-pointer"
       >
-        {{ option.label }}
-      </option>
-    </select>
+        <option
+          v-for="option in options"
+          :key="option.value"
+          :value="option.value"
+        >
+          {{ option.label }}
+        </option>
+      </select>
+      <ChevronDown :size="12" class="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+    </div>
   </div>
 </template>

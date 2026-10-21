@@ -21,48 +21,54 @@ const STATUS_COLORS = {
   running: '#22c55e', // green-500
   started: '#eab308', // yellow-500
   error:   '#ef4444', // red-500
-  stopped: '#9ca3af', // gray-400 
-  unknown: '#9ca3af', // gray-400 (fallback)
+  stopped: '#52525b', // zinc-600
+  unknown: '#52525b', // zinc-600 (fallback)
 };
+// Pending/transient states get a blinking LED, like an instrument annunciator.
+const BLINKING = new Set(['started', 'error']);
 const currentStatus = computed(() => {
   if (!props.id || !store.process_status[props.id]) return 'unknown';
   return store.process_status[props.id];
 });
 const statusText = computed(() => currentStatus.value);
 const statusColor = computed(() => STATUS_COLORS[currentStatus.value] || STATUS_COLORS.unknown);
+const isBlinking = computed(() => BLINKING.has(currentStatus.value));
+const ledGlow = computed(() =>
+  currentStatus.value === 'running' ? `0 0 6px ${statusColor.value}` : 'none'
+);
 
 </script>
 
 <template>
-  <div class="flex flex-col h-full bg-gray-900/50 text-gray-200 rounded-xl overflow-hidden font-sans transition duration-200 border-t border-b" :style="{ borderColor: statusColor }">
-    
-    <div class="flex justify-between items-center px-4 py-1 border-b border-gray-600">
-      <h3 class="m-0 text-lg font-semibold">{{ title }}</h3>
-      <div class="flex items-center gap-2 bg-white px-3 py-1 rounded-full border border-gray-200 shadow-sm">
-        <span 
-          class="w-2 h-2 rounded-full shrink-0" 
-          :style="{ backgroundColor: statusColor }"
+  <div class="panel">
+    <span
+      class="absolute left-0 top-0 bottom-0 w-0.5"
+      :style="{ backgroundColor: statusColor }"
+    ></span>
+
+    <header class="panel-header">
+      <h3 class="m-0 text-[13px] font-semibold uppercase tracking-wider text-zinc-100">{{ title }}</h3>
+      <div class="flex items-center gap-1.5">
+        <span
+          class="led"
+          :class="{ 'animate-pulse': isBlinking }"
+          :style="{ backgroundColor: statusColor, boxShadow: ledGlow }"
         ></span>
-        <span 
-          class="text-xs font-medium uppercase tracking-wider" 
-          :style="{ color: statusColor }"
-        >
-        {{ statusText }}
-        </span>
+        <span class="micro-label" :style="{ color: statusColor }">{{ statusText }}</span>
       </div>
-    </div>
-    
-    <div class="flex-1 min-h-0 overflow-y-auto px-4 py-1">
+    </header>
+
+    <div class="panel-body">
       <slot></slot>
     </div>
 
-    <div class="flex gap-3 w-full px-4 py-2 border-t border-gray-600">
-      <button @click="emit('start')" class="flex-1 px-4 py-2.5 sm:py-1.5 text-sm font-semibold text-gray-400 hover:text-green-400 active:text-green-400 border-2 border-gray-500 hover:border-green-500/40 active:border-green-500/40 rounded-md transition">
+    <footer class="panel-footer">
+      <button @click="emit('start')" class="key-btn hover:text-green-400 hover:bg-green-500/10 active:text-green-300 active:bg-green-500/15">
         Start
       </button>
-      <button @click="emit('stop')" class="flex-1 px-4 py-2.5 sm:py-1.5 text-sm font-semibold text-gray-400 hover:text-red-400 active:text-red-400 border-2 border-gray-500 hover:border-red-500/40 active:border-red-500/40 rounded-md transition">
-         Stop
+      <button @click="emit('stop')" class="key-btn border-l border-hairline hover:text-red-400 hover:bg-red-500/10 active:text-red-300 active:bg-red-500/15">
+        Stop
       </button>
-    </div>
+    </footer>
   </div>
 </template>

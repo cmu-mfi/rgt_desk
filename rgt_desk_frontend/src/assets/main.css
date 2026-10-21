@@ -1,5 +1,72 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------------
+ * RGT Desk — "Operator Console" design tokens
+ * Monochrome surfaces + hairlines; color is reserved for status and the
+ * single amber accent used for interactive/active states.
+ * ------------------------------------------------------------------------- */
+@theme {
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-console: #09090b; /* app surface */
+  --color-panel: #0e0e11;   /* module bodies */
+  --color-hairline: #26262b; /* borders + grid gaps */
+  --color-accent: #f59e0b;  /* amber-500 — interactive accent */
+}
+
 body {
-  @apply bg-gray-900 text-white m-0 p-0 h-dvh w-full;
+  @apply bg-console text-zinc-200 m-0 p-0 h-dvh w-full;
+  /* Barely-visible machined grid texture */
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.015) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.015) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Thin, dark instrument-style scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3f3f46 transparent;
+}
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@layer components {
+  /* Micro label: mono uppercase readouts (status text, captions) */
+  .micro-label {
+    @apply font-mono text-[10px] font-medium uppercase tracking-[0.18em];
+  }
+
+  /* Status LED dot — color applied inline */
+  .led {
+    @apply inline-block w-1.5 h-1.5 rounded-full shrink-0;
+  }
+
+  /* Module card: square, hairline-separated cell of the console grid */
+  .panel {
+    @apply relative flex flex-col h-full min-h-0 bg-panel overflow-hidden;
+  }
+  .panel-header {
+    @apply flex items-center justify-between gap-3 pl-4 pr-3 py-2 border-b border-hairline shrink-0;
+  }
+  .panel-body {
+    @apply flex-1 min-h-0 overflow-y-auto px-4 py-2;
+  }
+  .panel-footer {
+    @apply flex w-full border-t border-hairline shrink-0;
+  }
+
+  /* Key-style footer button */
+  .key-btn {
+    @apply flex-1 px-4 py-2.5 sm:py-2 font-mono text-[11px] font-medium uppercase tracking-[0.2em] text-zinc-400 transition-colors duration-150 cursor-pointer select-none;
+  }
 }
