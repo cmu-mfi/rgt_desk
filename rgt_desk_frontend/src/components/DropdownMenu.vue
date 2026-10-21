@@ -22,14 +22,14 @@ defineEmits(['update:modelValue']);
 
 <template>
   <div class="flex items-center justify-between gap-3 py-2">
-    <label class="text-[13px] font-medium text-zinc-300 whitespace-nowrap">
+    <label class="text-[14px] font-medium text-zinc-300 whitespace-nowrap">
       {{ label }}
     </label>
     <div class="relative w-full max-w-[160px]">
       <select
         :value="modelValue"
         @change="$emit('update:modelValue', $event.target.value)"
-        class="w-full appearance-none bg-zinc-900 border border-hairline text-zinc-200 font-mono text-xs px-2 py-1.5 pr-7 outline-none focus:border-accent transition-colors cursor-pointer"
+        class="w-full appearance-none bg-zinc-900 border border-hairline text-zinc-200 font-mono text-[13px] px-2 py-1.5 pr-7 outline-none focus:border-accent transition-colors cursor-pointer"
       >
         <option
           v-for="option in options"

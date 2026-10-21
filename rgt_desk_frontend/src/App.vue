@@ -72,7 +72,7 @@ onUnmounted(() => {
 @reference "tailwindcss";
 
 .seg-link {
-  @apply flex items-center justify-center gap-1.5 px-2.5 py-2 sm:px-4 sm:py-1.5 font-mono text-[11px] font-medium uppercase tracking-wider transition-colors duration-150;
+  @apply flex items-center justify-center gap-1.5 px-2.5 py-2 sm:px-4 sm:py-1.5 font-mono text-[12px] font-medium uppercase tracking-wider transition-colors duration-150;
 }
 
 .seg-link:hover {

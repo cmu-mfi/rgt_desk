@@ -43,7 +43,7 @@ body {
 @layer components {
   /* Micro label: mono uppercase readouts (status text, captions) */
   .micro-label {
-    @apply font-mono text-[10px] font-medium uppercase tracking-[0.18em];
+    @apply font-mono text-[11px] font-medium uppercase tracking-[0.18em];
   }
 
   /* Status LED dot — color applied inline */
@@ -67,6 +67,6 @@ body {
 
   /* Key-style footer button */
   .key-btn {
-    @apply flex-1 px-4 py-2.5 sm:py-2 font-mono text-[11px] font-medium uppercase tracking-[0.2em] text-zinc-400 transition-colors duration-150 cursor-pointer select-none;
+    @apply flex-1 px-4 py-3.5 font-mono text-[13px] font-medium uppercase tracking-[0.2em] text-zinc-400 transition-colors duration-150 cursor-pointer select-none;
   }
 }

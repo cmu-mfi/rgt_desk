@@ -47,7 +47,7 @@ const ledGlow = computed(() =>
     ></span>
 
     <header class="panel-header">
-      <h3 class="m-0 text-[13px] font-semibold uppercase tracking-wider text-zinc-100">{{ title }}</h3>
+      <h3 class="m-0 text-[15px] font-semibold uppercase tracking-wider text-zinc-100">{{ title }}</h3>
       <div class="flex items-center gap-1.5">
         <span
           class="led"
