@@ -56,7 +56,7 @@ const ledGlow = computed(() =>
       </div>
     </header>
 
-    <p v-if="description" class="pl-4 pr-3 mt-1 mb-3 text-[11px] leading-snug text-zinc-500">{{ description }}</p>
+    <p v-if="description" class="pl-4 pr-3 mt-1 mb-3 text-[13px] leading-snug text-zinc-500">{{ description }}</p>
 
     <div class="panel-body">
       <slot></slot>
