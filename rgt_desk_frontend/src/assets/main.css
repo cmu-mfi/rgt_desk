@@ -15,6 +15,18 @@
   --color-accent: #f59e0b;  /* amber-500 — interactive accent */
 }
 
+/* Global UI scale: reproduces the 150% browser-zoom look the panel was
+   tuned at. Phones keep their native scale so the responsive layout
+   stays comfortable on small screens. */
+html {
+  zoom: 1.5;
+}
+@media (max-width: 639px) {
+  html {
+    zoom: 1;
+  }
+}
+
 body {
   @apply bg-console text-zinc-200 m-0 p-0 h-dvh w-full;
   /* Barely-visible machined grid texture */
