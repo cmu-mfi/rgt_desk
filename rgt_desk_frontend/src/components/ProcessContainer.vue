@@ -1,5 +1,5 @@
 <script setup>
-import { computed, useSlots } from 'vue';
+import { computed } from 'vue';
 import { useStore } from '../stores/store';
 
 const props = defineProps({
@@ -16,14 +16,6 @@ const props = defineProps({
 const emit = defineEmits(['start', 'stop']);
 
 const store = useStore();
-
-const slots = useSlots();
-// Cards without params drop the body entirely, so the action keys own the module.
-const hasBody = computed(() => {
-  if (!slots.default) return false;
-  const vnodes = slots.default();
-  return Array.isArray(vnodes) ? vnodes.length > 0 : !!vnodes;
-});
 
 const STATUS_COLORS = {
   running: '#22c55e', // green-500
@@ -55,7 +47,7 @@ const ledGlow = computed(() =>
     ></span>
 
     <header class="panel-header">
-      <h3 class="m-0 text-[14px] font-semibold uppercase tracking-wider text-zinc-100">{{ title }}</h3>
+      <h3 class="m-0 text-[13px] font-semibold uppercase tracking-wider text-zinc-100">{{ title }}</h3>
       <div class="flex items-center gap-1.5">
         <span
           class="led"
@@ -66,15 +58,15 @@ const ledGlow = computed(() =>
       </div>
     </header>
 
-    <div v-if="hasBody" class="panel-body">
+    <div class="panel-body">
       <slot></slot>
     </div>
 
-    <footer class="panel-footer" :class="{ 'flex-1': !hasBody }">
-      <button @click="emit('start')" class="key-btn bg-green-600 hover:bg-green-500 active:bg-green-400">
+    <footer class="panel-footer">
+      <button @click="emit('start')" class="key-btn hover:text-green-400 hover:bg-green-500/10 active:text-green-300 active:bg-green-500/15">
         Start
       </button>
-      <button @click="emit('stop')" class="key-btn border-l border-hairline bg-red-600 hover:bg-red-500 active:bg-red-400">
+      <button @click="emit('stop')" class="key-btn border-l border-hairline hover:text-red-400 hover:bg-red-500/10 active:text-red-300 active:bg-red-500/15">
         Stop
       </button>
     </footer>

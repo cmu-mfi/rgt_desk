@@ -43,7 +43,7 @@ body {
 @layer components {
   /* Micro label: mono uppercase readouts (status text, captions) */
   .micro-label {
-    @apply font-mono text-[11px] font-medium uppercase tracking-[0.18em];
+    @apply font-mono text-[10px] font-medium uppercase tracking-[0.18em];
   }
 
   /* Status LED dot — color applied inline */
@@ -59,18 +59,14 @@ body {
     @apply flex items-center justify-between gap-3 pl-4 pr-3 py-2 border-b border-hairline shrink-0;
   }
   .panel-body {
-    @apply flex flex-col flex-1 min-h-0 overflow-y-auto px-4 py-2;
-    /* Center short param lists vertically; `safe` falls back to start
-       instead of clipping when content overflows. */
-    justify-content: safe center;
+    @apply flex-1 min-h-0 overflow-y-auto px-4 py-2;
   }
   .panel-footer {
     @apply flex w-full border-t border-hairline shrink-0;
   }
 
-  /* Key-style footer button: a solid, color-coded pushbutton.
-     Fill color comes from the semantic variant classes on the element. */
+  /* Key-style footer button */
   .key-btn {
-    @apply flex-1 flex items-center justify-center px-4 py-3.5 font-mono text-[13px] font-semibold uppercase tracking-[0.2em] text-zinc-950 transition-colors duration-150 cursor-pointer select-none focus-visible:outline-1 focus-visible:-outline-offset-4 focus-visible:outline-zinc-100/60;
+    @apply flex-1 px-4 py-2.5 sm:py-2 font-mono text-[11px] font-medium uppercase tracking-[0.2em] text-zinc-400 transition-colors duration-150 cursor-pointer select-none;
   }
 }
