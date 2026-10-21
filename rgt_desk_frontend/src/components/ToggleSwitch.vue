@@ -15,7 +15,7 @@ defineEmits(['update:modelValue']);
 
 <template>
   <div class="flex items-center justify-between gap-3 py-2">
-    <label class="text-[14px] font-medium text-zinc-300">{{ label }}</label>
+    <label class="text-[16px] font-medium text-zinc-300">{{ label }}</label>
     <label class="relative inline-flex shrink-0 cursor-pointer">
       <input
         type="checkbox"

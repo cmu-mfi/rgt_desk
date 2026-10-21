@@ -15,18 +15,6 @@
   --color-accent: #f59e0b;  /* amber-500 — interactive accent */
 }
 
-/* Global UI scale: reproduces the 150% browser-zoom look the panel was
-   tuned at. Phones keep their native scale so the responsive layout
-   stays comfortable on small screens. */
-html {
-  zoom: 1.5;
-}
-@media (max-width: 639px) {
-  html {
-    zoom: 1;
-  }
-}
-
 body {
   @apply bg-console text-zinc-200 m-0 p-0 h-dvh w-full;
   /* Barely-visible machined grid texture */
@@ -55,7 +43,7 @@ body {
 @layer components {
   /* Micro label: mono uppercase readouts (status text, captions) */
   .micro-label {
-    @apply font-mono text-[11px] font-medium uppercase tracking-[0.18em];
+    @apply font-mono text-[12px] font-medium uppercase tracking-[0.18em];
   }
 
   /* Status LED dot — color applied inline */
@@ -79,6 +67,6 @@ body {
 
   /* Key-style footer button */
   .key-btn {
-    @apply flex-1 px-4 py-3.5 font-mono text-[13px] font-medium uppercase tracking-[0.2em] text-zinc-400 transition-colors duration-150 cursor-pointer select-none;
+    @apply flex-1 px-4 py-3.5 font-mono text-[15px] font-medium uppercase tracking-[0.2em] text-zinc-400 transition-colors duration-150 cursor-pointer select-none;
   }
 }

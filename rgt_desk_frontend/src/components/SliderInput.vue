@@ -36,8 +36,8 @@ const fill = computed(() => {
 <template>
   <div class="flex flex-col gap-1.5 py-2 w-full">
     <div class="flex justify-between items-center gap-3">
-      <label class="text-[14px] font-medium text-zinc-300">{{ label }}</label>
-      <span class="font-mono text-[12px] text-zinc-200 bg-zinc-900 border border-hairline px-1.5 py-0.5 min-w-12 text-center">
+      <label class="text-[16px] font-medium text-zinc-300">{{ label }}</label>
+      <span class="font-mono text-[14px] text-zinc-200 bg-zinc-900 border border-hairline px-1.5 py-0.5 min-w-12 text-center">
         {{ modelValue }}
       </span>
     </div>
