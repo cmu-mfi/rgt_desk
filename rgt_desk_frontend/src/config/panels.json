@@ -38,6 +38,7 @@
           "type": "process",
           "id": "ur20",
           "title": "UR 20",
+          "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.",
           "params": [
             { "key": "use_mock_hardware", "type": "toggle", "label": "Use Mock Hardware" }
           ]
@@ -46,6 +47,7 @@
           "type": "process",
           "id": "nex10",
           "title": "Nex 10",
+          "description": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
           "params": [
             { "key": "use_mock_hardware", "type": "toggle", "label": "Use Mock Hardware" },
             { "key": "use_ft_sensor", "type": "toggle", "label": "Use FT Sensor", "default": true }
@@ -55,12 +57,14 @@
           "type": "process",
           "id": "rgt_manager",
           "title": "RGT Manager",
+          "description": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla.",
           "params": []
         },
         {
           "type": "process",
           "id": "foxglove_bridge",
           "title": "Foxglove Bridge",
+          "description": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim.",
           "params": []
         }
       ]
@@ -72,24 +76,28 @@
           "type": "process",
           "id": "bed_side_cam",
           "title": "Bed Side Camera",
+          "description": "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.",
           "params": []
         },
         {
           "type": "process",
           "id": "bed_side_thermal",
           "title": "Bed Side Thermal",
+          "description": "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur.",
           "params": []
         },
         {
           "type": "process",
           "id": "bed_side_audio",
           "title": "Bed Side Audio",
+          "description": "Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur adipisci velit.",
           "params": []
         },
         {
           "type": "process",
           "id": "gripper",
           "title": "Gripper",
+          "description": "Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae.",
           "params": [
             { "key": "use_mock_hardware", "type": "toggle", "label": "Use Mock Hardware" }
           ]
@@ -103,6 +111,7 @@
           "type": "process",
           "id": "spacemouse",
           "title": "Spacemouse",
+          "description": "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum.",
           "params": [
             { "key": "ns", "type": "select", "label": "Robot", "options": "robots" }
           ]
@@ -111,6 +120,7 @@
           "type": "service",
           "id": "home",
           "title": "Home",
+          "description": "Et harum quidem rerum facilis est et expedita distinctio nam libero tempore cum soluta nobis.",
           "params": [
             { "key": "ns", "type": "select", "label": "Robot", "options": "robots" },
             { "key": "speed", "type": "slider", "label": "Speed (%)", "min": 0.1, "max": 1.0, "step": 0.1, "default": 0.1 }
@@ -120,6 +130,7 @@
           "type": "service",
           "id": "park",
           "title": "Park",
+          "description": "Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut.",
           "params": [
             { "key": "ns", "type": "select", "label": "Robot", "options": "robots" },
             { "key": "speed", "type": "slider", "label": "Speed (%)", "min": 0.1, "max": 1.0, "step": 0.1, "default": 0.1 }
@@ -129,6 +140,7 @@
           "type": "service",
           "id": "change_tool",
           "title": "Change Tool",
+          "description": "Itaque earum rerum hic tenetur a sapiente delectus ut aut reiciendis voluptatibus maiores alias.",
           "params": [
             { "key": "robot", "type": "select", "label": "Robot", "options": "robots" },
             { "key": "tool", "type": "select", "label": "Tool", "options": "tools" }
@@ -138,6 +150,7 @@
           "type": "service",
           "id": "override_tool_location",
           "title": "Override Tool Location",
+          "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.",
           "params": [
             { "key": "tool", "type": "select", "label": "Tool", "options": "tools" },
             { "key": "location", "type": "select", "label": "Location", "options": "locations" }
@@ -147,6 +160,7 @@
           "type": "service",
           "id": "set_io",
           "title": "Set IO",
+          "description": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
           "params": [
             { "key": "robot", "type": "select", "label": "Robot", "options": "robots" },
             { "key": "pin", "type": "select", "label": "Pin", "options": "pins", "default": 0 },
@@ -162,18 +176,21 @@
           "type": "process",
           "id": "panda",
           "title": "Panda",
+          "description": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla.",
           "params": []
         },
         {
           "type": "process",
           "id": "space_panda_link",
           "title": "Space Panda Link",
+          "description": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim.",
           "params": []
         },
         {
           "type": "service",
           "id": "space_panda_link_parameters",
           "title": "Space Panda Link Parameters",
+          "description": "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.",
           "span": 2,
           "params": [
             { "key": "mimicing_scale", "type": "slider", "label": "Mimicing Scale", "min": 0.1, "max": 2.0, "step": 0.1, "default": 1.0 },

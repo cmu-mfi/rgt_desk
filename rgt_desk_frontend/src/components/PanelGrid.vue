@@ -40,6 +40,7 @@ function panelClass(panel) {
         <ProcessContainer
           v-if="panel.type === 'process'"
           :title="panel.title"
+          :description="panel.description"
           :id="panel.id"
           :class="panelClass(panel)"
           @start="() => store.startProcess(panel.id)"
@@ -55,6 +56,7 @@ function panelClass(panel) {
         <ServiceContainer
           v-else
           :title="panel.title"
+          :description="panel.description"
           :id="panel.id"
           :class="panelClass(panel)"
           @execute="() => store.executeService(panel.id)"

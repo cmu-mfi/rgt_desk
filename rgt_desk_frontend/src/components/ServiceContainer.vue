@@ -11,6 +11,10 @@ const props = defineProps({
     type: String,
     required: true
   },
+  description: {
+    type: String,
+    default: ''
+  },
 });
 
 const emit = defineEmits(['execute']);
@@ -51,6 +55,8 @@ const ledGlow = computed(() =>
         <span class="micro-label" :style="{ color: statusColor }">{{ statusText }}</span>
       </div>
     </header>
+
+    <p v-if="description" class="pl-4 pr-3 mt-1 mb-3 text-[11px] leading-snug text-zinc-500">{{ description }}</p>
 
     <div class="panel-body">
       <slot></slot>

@@ -21,6 +21,7 @@ onUnmounted(() => {
       <div class="flex items-center gap-2.5 min-w-0">
         <span class="led w-2 h-2 bg-accent animate-pulse"></span>
         <h1 class="font-mono text-base font-semibold tracking-[0.25em] text-zinc-100 whitespace-nowrap">RGT DESK</h1>
+        <p class="hidden md:block font-mono text-xs text-zinc-500 border-l border-hairline pl-2.5 ml-1 whitespace-nowrap truncate">Control panel for the Robot Grinding Testbed system</p>
       </div>
 
       <nav class="flex flex-nowrap bg-panel border border-hairline p-px text-zinc-500">
