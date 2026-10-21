@@ -4,24 +4,13 @@ import time
 import rclpy
 from rclpy.node import Node
 import tmux
+import process_config
 from ur_dashboard_msgs.msg import SafetyMode
 from controller_manager_msgs.msg import ControllerManagerActivity
 
 class ProcessMonitor():
     def __init__(self):
-        self.status = {
-                "ur20": "stopped",
-                "nex10": "stopped",
-                "rgt_manager": "stopped",
-                "foxglove_bridge": "stopped",
-                "bed_side_cam": "stopped",
-                "bed_side_thermal": "stopped",
-                "bed_side_audio": "stopped",
-                "spacemouse": "stopped",
-                "panda": "stopped",
-                "space_panda_link": "stopped",
-                "gripper": "stopped",
-                }
+        self.status = {name: "stopped" for name in process_config.process_names()}
         self.stop_event = threading.Event()
         self.ur20_error = False
         self.nex10_error = False 

@@ -1,0 +1,63 @@
+{
+  "processes": {
+    "ur20": {
+      "command": "../process_scripts/ur20.sh {use_mock_hardware}"
+    },
+    "nex10": {
+      "command": "../process_scripts/nex10.sh {use_mock_hardware} {use_ft_sensor}"
+    },
+    "rgt_manager": {
+      "command": "../process_scripts/rgt_manager.sh"
+    },
+    "foxglove_bridge": {
+      "command": "../process_scripts/foxglove_bridge.sh"
+    },
+    "spacemouse": {
+      "command": "../process_scripts/spacemouse.sh {ns}"
+    },
+    "bed_side_cam": {
+      "command": "../process_scripts/bed_side_cam.sh"
+    },
+    "bed_side_thermal": {
+      "command": "../process_scripts/bed_side_thermal.sh"
+    },
+    "bed_side_audio": {
+      "command": "../process_scripts/bed_side_audio.sh"
+    },
+    "gripper": {
+      "command": "../process_scripts/gripper.sh {use_mock_hardware}"
+    },
+    "panda": {
+      "command": "../process_scripts/panda.sh"
+    },
+    "space_panda_link": {
+      "command": "../process_scripts/space_panda_link.sh"
+    }
+  },
+  "services": {
+    "home": {
+      "command": "../service_scripts/home.sh {ns} {speed}"
+    },
+    "park": {
+      "command": "../service_scripts/park.sh {ns} {speed}"
+    },
+    "change_tool": {
+      "command": "../service_scripts/change_tool.sh {robot} {tool}"
+    },
+    "override_tool_location": {
+      "command": "../service_scripts/override_tool_location.sh {tool} {location}"
+    },
+    "space_panda_link_parameters": {
+      "command": "../service_scripts/space_panda_link_parameters.sh {mimicing_scale} {wrench_passthrough_force_scale} {wrench_passthrough_torque_scale} {damping_value} {mimicing_enabled} {wrench_passthrough_enabled} {damping_enabled}",
+      "coerce": {
+        "mimicing_scale": "float",
+        "wrench_passthrough_force_scale": "float",
+        "wrench_passthrough_torque_scale": "float",
+        "damping_value": "float"
+      }
+    },
+    "set_io": {
+      "command": "../service_scripts/set_io.sh {robot} {pin} {state}"
+    }
+  }
+}

@@ -4,18 +4,17 @@ Dashboard for a robotics lab: Vue 3 frontend drives a FastAPI backend that start
 
 ## Architecture
 
-- `rgt_desk_backend/` — FastAPI app (`main.py` → `api.py`). Long-running processes are spawned as tmux windows in session `rgt` via libtmux (`tmux.py`); one-shot actions shell out to `ros2 service call`. `process_monitor.py` is a background rclpy thread deriving status: `running` = tmux window AND matching ROS node visible, `started` = window only, `error` = only for `ur20`/`nex10` (subscribed ROS topics).
+- `rgt_desk_backend/` — FastAPI app (`main.py` → `api.py`). Long-running processes are spawned as tmux windows in session `rgt` via libtmux (`tmux.py`); one-shot actions shell out to `ros2 service call`. Command construction is config-driven: `config.json` holds a `command` template per process/service and `process_config.py` fills its `{placeholders}` from the request params (shlex-quoted; an optional `coerce` map forces `float`/`int` stringification). `process_monitor.py` is a background rclpy thread deriving status: `running` = tmux window AND matching ROS node visible, `started` = window only, `error` = only for `ur20`/`nex10` (subscribed ROS topics).
 - `rgt_desk_frontend/` — Vue 3 + Vite + Tailwind 4 + Pinia. Panels are config-driven: `src/config/panels.json` declares every process/service card per tab (widget types, labels, slider ranges, dropdown options); the `src/views/` tabs are thin wrappers around `src/components/PanelGrid.vue`, which renders `<ProcessContainer>`/`<ServiceContainer>` cards with `<ParamControl>` widgets. Store defaults and service-status keys derive from `panels.json`. All API traffic goes through `src/stores/store.js` → `src/services/api.js` (axios; polls `get_status` every 1s; base URL = page hostname + port 8000). Layout is responsive (`h-dvh`; page scrolls on phones, desktop stays fixed with card-internal scrolling for long param lists).
 - `process_scripts/` — one script per long-running process (ros2 launch/run). `service_scripts/` — one script per one-shot ros2 service call. `systemd_services/` — unit files symlinked into `/etc/systemd/system` by `install.sh`.
 
-## Adding a process or service (names must match in 4 places)
+## Adding a process or service (no Python changes needed)
 
-Process name = tmux window name = status key = frontend id:
+Process name = tmux window name = status key = frontend id = `config.json` key:
 
-1. `process_scripts/<name>.sh` (or `service_scripts/<name>.sh`)
-2. `api.py` — add a branch in `start_process`/`stop_process` (or `execute_service`)
-3. `process_monitor.py` — add name to the `status` dict (processes only)
-4. Frontend — add a panel entry under the right tab in `rgt_desk_frontend/src/config/panels.json` (param `key`s must match what `api.py` reads)
+1. `process_scripts/<name>.sh` (or `service_scripts/<name>.sh`) — chmod +x
+2. `rgt_desk_backend/config.json` — add an entry with a `command` template; `{placeholder}`s are filled from the panel's params (use the `coerce` map only if a script needs forced `float`/`int` literals, e.g. ros2 double params)
+3. Frontend — add a panel entry under the right tab in `rgt_desk_frontend/src/config/panels.json` (param `key`s must match the `{placeholder}`s in `config.json`)
 
 ## Environment / gotchas
 
