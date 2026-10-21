@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, useSlots } from 'vue';
 import { useStore } from '../stores/store';
 
 const props = defineProps({
@@ -15,6 +15,14 @@ const props = defineProps({
 
 const emit = defineEmits(['execute']);
 const store = useStore();
+
+const slots = useSlots();
+// Cards without params drop the body entirely, so the action key owns the module.
+const hasBody = computed(() => {
+  if (!slots.default) return false;
+  const vnodes = slots.default();
+  return Array.isArray(vnodes) ? vnodes.length > 0 : !!vnodes;
+});
 const STATUS_COLORS = {
   executing: '#1490de',
   idle:      '#52525b', // zinc-600
@@ -41,7 +49,7 @@ const ledGlow = computed(() =>
     ></span>
 
     <header class="panel-header">
-      <h3 class="m-0 text-[13px] font-semibold uppercase tracking-wider text-zinc-100">{{ title }}</h3>
+      <h3 class="m-0 text-[14px] font-semibold uppercase tracking-wider text-zinc-100">{{ title }}</h3>
       <div class="flex items-center gap-1.5">
         <span
           class="led"
@@ -52,12 +60,12 @@ const ledGlow = computed(() =>
       </div>
     </header>
 
-    <div class="panel-body">
+    <div v-if="hasBody" class="panel-body">
       <slot></slot>
     </div>
 
-    <footer class="panel-footer">
-      <button @click="emit('execute')" class="key-btn hover:text-blue-400 hover:bg-blue-500/10 active:text-blue-300 active:bg-blue-500/15">
+    <footer class="panel-footer" :class="{ 'flex-1': !hasBody }">
+      <button @click="emit('execute')" class="key-btn bg-accent hover:bg-amber-400 active:bg-amber-300">
         Execute
       </button>
     </footer>
