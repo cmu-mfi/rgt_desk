@@ -85,6 +85,14 @@
           "id": "bed_side_audio",
           "title": "Bed Side Audio",
           "params": []
+        },
+        {
+          "type": "process",
+          "id": "gripper",
+          "title": "Gripper",
+          "params": [
+            { "key": "use_mock_hardware", "type": "toggle", "label": "Use Mock Hardware" }
+          ]
         }
       ]
     },
