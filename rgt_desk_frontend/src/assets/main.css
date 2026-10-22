@@ -9,9 +9,9 @@
   --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  --color-console: #09090b; /* app surface */
-  --color-panel: #0e0e11;   /* module bodies */
-  --color-hairline: #26262b; /* borders + grid gaps */
+  --color-console: #000000; /* app surface */
+  --color-panel: #141414;   /* module bodies */
+  --color-hairline: #000000; /* borders + grid gaps */
   --color-accent: #f59e0b;  /* amber-500 — interactive accent */
 }
 
