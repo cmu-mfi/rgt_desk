@@ -7,6 +7,7 @@ const PARAM_DEFAULTS = {
   toggle: () => false,
   select: () => '',
   slider: (param) => param.min ?? 0,
+  text: () => '',
 };
 
 // Store defaults and service status keys are derived from panels.json,

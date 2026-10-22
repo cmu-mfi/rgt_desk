@@ -166,6 +166,15 @@
             { "key": "pin", "type": "select", "label": "Pin", "options": "pins", "default": 0 },
             { "key": "state", "type": "select", "label": "State", "options": "states", "default": 0 }
           ]
+        },
+        {
+          "type": "process",
+          "id": "rosbag_record",
+          "title": "Rosbag Record",
+          "description": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
+          "params": [
+            { "key": "name", "type": "text", "label": "Recording Name", "default": "", "maxLength": 30 }
+          ]
         }
       ]
     },

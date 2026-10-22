@@ -2,6 +2,7 @@
 import ToggleSwitch from './ToggleSwitch.vue';
 import SliderInput from './SliderInput.vue';
 import DropdownMenu from './DropdownMenu.vue';
+import TextInput from './TextInput.vue';
 import panelsConfig from '../config/panels.json';
 
 defineProps({
@@ -46,6 +47,13 @@ function resolveOptions(param) {
     :model-value="modelValue"
     :label="param.label"
     :options="resolveOptions(param)"
+    @update:modelValue="$emit('update:modelValue', $event)"
+  />
+  <TextInput
+    v-else-if="param.type === 'text'"
+    :model-value="modelValue"
+    :label="param.label"
+    :max-length="param.maxLength"
     @update:modelValue="$emit('update:modelValue', $event)"
   />
 </template>
