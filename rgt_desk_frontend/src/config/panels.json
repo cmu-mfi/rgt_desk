@@ -171,7 +171,7 @@
           "type": "process",
           "id": "rosbag_record",
           "title": "Rosbag Record",
-          "description": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
+          "description": "Record robot and sensor data in a rosbag. Name: mfirgt_<timestamp>_<name>. Path: /home/mfi/rgt_rosbags/",
           "params": [
             { "key": "name", "type": "text", "label": "Recording Name", "default": "", "maxLength": 30 }
           ]

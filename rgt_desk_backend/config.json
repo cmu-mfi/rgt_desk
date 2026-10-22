@@ -32,6 +32,9 @@
     },
     "space_panda_link": {
       "command": "../process_scripts/space_panda_link.sh"
+    },
+    "rosbag_record": {
+      "command": "../process_scripts/rosbag_record.sh {name}"
     }
   },
   "services": {
