@@ -33,7 +33,7 @@ function panelClass(panel) {
 <template>
   <div class="w-full min-h-full md:h-full p-3 sm:p-4 flex">
     <div
-      class="grid flex-1 min-h-0 grid-cols-1 sm:grid-cols-2 gap-px bg-hairline border border-hairline"
+      class="grid flex-1 min-h-0 grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 bg-hairline border border-hairline"
       :class="DESKTOP_COLS[props.columns] || DESKTOP_COLS[2]"
     >
       <template v-for="panel in panels" :key="panel.id">
