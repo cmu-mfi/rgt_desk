@@ -1,13 +1,10 @@
-# rgt_desk
+# RGT Desk
 Absolutely life-changing dashboard experience unlike anything you have ever seen before. Truly eye-opening. Let's grind!
 
-![Image](assets/main.png)
-
-![Image](assets/sensors.png)
-
-![Image](assets/utilities.png)
-
-![Image](assets/space_panda.png)
+<img width="480" alt="page1" src="https://github.com/user-attachments/assets/9d3fd9a2-5d49-486c-ba11-2b2f86d66f61" />
+<img width="480" alt="page2" src="https://github.com/user-attachments/assets/e85252e0-99d9-409b-a272-97ebb39fd8b5" />
+<img width="480" alt="page3" src="https://github.com/user-attachments/assets/5d338639-b680-4312-8a7a-6febbedca1df" />
+<img width="480" alt="page4" src="https://github.com/user-attachments/assets/a20a426d-7111-421c-b9c8-058cc0d7cc05" />
 
 A dashboard for starting/stopping robot processes and calling robot services. A Vue 3 frontend talks to a FastAPI backend, which manages the ROS 2 (Jazzy) processes as tmux windows in a session named `rgt`. Both are run as systemd services.
 
