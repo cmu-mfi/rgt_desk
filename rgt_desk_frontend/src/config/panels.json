@@ -16,14 +16,23 @@
       { "label": "Nex 10", "value": "nex10" }
     ],
     "pins": [
-      { "label": "Pin 0", "value": 0 },
-      { "label": "Pin 1", "value": 1 },
-      { "label": "Pin 2", "value": 2 },
-      { "label": "Pin 3", "value": 3 },
-      { "label": "Pin 4", "value": 4 },
-      { "label": "Pin 5", "value": 5 },
-      { "label": "Pin 6", "value": 6 },
-      { "label": "Pin 7", "value": 7 }
+      { "label": "Pin 00", "value": 0 },
+      { "label": "Pin 01", "value": 1 },
+      { "label": "Pin 02", "value": 2 },
+      { "label": "Pin 03", "value": 3 },
+      { "label": "Pin 04", "value": 4 },
+      { "label": "Pin 05", "value": 5 },
+      { "label": "Pin 06", "value": 6 },
+      { "label": "Pin 07", "value": 7 },
+      { "label": "Pin 08", "value": 8 },
+      { "label": "Pin 09", "value": 9 },
+      { "label": "Pin 10", "value": 10 },
+      { "label": "Pin 11", "value": 11 },
+      { "label": "Pin 12", "value": 12 },
+      { "label": "Pin 13", "value": 13 },
+      { "label": "Pin 14", "value": 14 },
+      { "label": "Pin 15", "value": 15 },
+      { "label": "Pin 16", "value": 16 }
     ],
     "states": [
       { "label": "Low", "value": 0 },

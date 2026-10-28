@@ -11,6 +11,7 @@ async def lifespan(app: FastAPI):
     process_monitor.stop()
 
 app = FastAPI(
+    lifespan=lifespan,
     title="RGT Desk Backend",
     description="""Dashboard backend for the robotics lab. Drives ROS 2 (Jazzy) on the robot host.
 
