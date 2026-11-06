@@ -1,1 +1,1 @@
- ros2 run seek_thermal_ros2 seek_thermal_driver --ros-args -p ns:=bed_side_thermal
+ ros2 launch seek_thermal_bringup bringup.launch.py ns:=bed_side_thermal

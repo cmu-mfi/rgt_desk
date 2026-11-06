@@ -24,6 +24,12 @@
     "bed_side_audio": {
       "command": "../process_scripts/bed_side_audio.sh"
     },
+    "tool_side_cam": {
+      "command": "../process_scripts/tool_side_cam.sh"
+    },
+    "tool_side_gelsight": {
+      "command": "../process_scripts/tool_side_gelsight.sh"
+    },
     "gripper": {
       "command": "../process_scripts/gripper.sh {use_mock_hardware}"
     },
