@@ -59,7 +59,7 @@ onUnmounted(() => {
       </nav>
     </header>
 
-    <main class="flex-1 min-h-0 overflow-y-auto md:overflow-hidden relative">
+    <main class="flex-1 min-h-0 overflow-y-auto relative">
       <router-view v-slot="{ Component, route }">
         <transition name="fade" mode="out-in">
         <component :is="Component" :key="route.path" />

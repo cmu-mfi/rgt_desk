@@ -36,3 +36,24 @@ def stop_process(name: str):
         pane.send_keys('C-c')
         time.sleep(1)
         window.kill()
+
+def get_logs(name: str, lines: int = 100) -> list[str]:
+    """Last `lines` lines of a process window's terminal (pane history).
+
+    Returns an empty list when the window does not exist (process stopped).
+    Output is plain text as rendered by tmux (`capture-pane -p -S -{lines}`):
+    ANSI colors stripped, long lines wrapped to the pane width.
+    """
+    lines = max(1, int(lines))
+    session = get_main_session()
+    window = session.windows.get(window_name=name, default=None)
+    if not window:
+        return []
+    pane = window.active_pane
+    if not pane:
+        return []
+    result = pane.cmd_capture_pane(start=f"-{lines}")
+    out = getattr(result, "stdout", result)
+    if isinstance(out, str):
+        return out.splitlines()
+    return [line.rstrip() for line in out if line is not None]

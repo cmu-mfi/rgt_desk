@@ -42,6 +42,8 @@ export const useStore = defineStore('store', {
   state: () => ({
     process_status: {
     },
+    process_logs: {
+    },
     service_status: buildInitialServiceStatus(),
     configs: buildInitialConfigs(),
     pollingInterval: null
@@ -56,10 +58,23 @@ export const useStore = defineStore('store', {
       }
     },
 
+    async fetchLogs() {
+      try {
+        const response = await api.getLogs();
+        this.process_logs = response.data;
+      } catch (error) {
+        console.error("Failed to fetch logs from backend:", error);
+      }
+    },
+
     startPolling() {
       if (!this.pollingInterval) {
         this.fetchStatus(); // Fetch immediately on start
-        this.pollingInterval = setInterval(this.fetchStatus, 1000);
+        this.fetchLogs();
+        this.pollingInterval = setInterval(() => {
+          this.fetchStatus();
+          this.fetchLogs();
+        }, 1000);
       }
     },
 

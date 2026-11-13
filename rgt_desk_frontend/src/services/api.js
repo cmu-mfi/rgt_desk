@@ -11,6 +11,9 @@ export default {
   getStatus() {
     return apiClient.get('/get_status');
   },
+  getLogs() {
+    return apiClient.get('/get_logs');
+  },
   startProcess(name, params = {}) {
     return apiClient.post('/start_process', { name, params });
   },

@@ -12,6 +12,10 @@ const props = defineProps({
   columns: {
     type: Number,
     default: 2
+  },
+  showLogs: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -31,9 +35,9 @@ function panelClass(panel) {
 </script>
 
 <template>
-  <div class="w-full min-h-full md:h-full p-3 sm:p-4 flex">
+  <div class="w-full min-h-full p-3 sm:p-4">
     <div
-      class="grid flex-1 min-h-0 grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 bg-hairline border border-hairline"
+      class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 bg-hairline border border-hairline"
       :class="DESKTOP_COLS[props.columns] || DESKTOP_COLS[2]"
     >
       <template v-for="panel in panels" :key="panel.id">
@@ -42,6 +46,7 @@ function panelClass(panel) {
           :title="panel.title"
           :description="panel.description"
           :id="panel.id"
+          :show-logs="showLogs"
           :class="panelClass(panel)"
           @start="() => store.startProcess(panel.id)"
           @stop="() => store.stopProcess(panel.id)"

@@ -42,6 +42,7 @@
   "tabs": {
     "main": {
       "columns": 2,
+      "logs": true,
       "panels": [
         {
           "type": "process",
@@ -80,6 +81,7 @@
     },
     "sensors": {
       "columns": 3,
+      "logs": true,
       "panels": [
         {
           "type": "process",
@@ -129,6 +131,7 @@
     },
     "utilities": {
       "columns": 2,
+      "logs": true,
       "panels": [
         {
           "type": "process",

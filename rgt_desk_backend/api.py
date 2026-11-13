@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from typing import Dict
+from typing import Dict, List
 import tmux
 from models import (
     StartProcessRequest,
@@ -35,6 +35,21 @@ def get_status():
     `stopped` = no window.
     """
     return process_monitor.get_status()
+
+@router.get(
+    "/get_logs",
+    tags=["processes"],
+    summary="Recent terminal output of every configured process",
+    response_model=Dict[str, List[str]],
+    )
+def get_logs(lines: int = 100):
+    """Map of process name -> last `lines` lines of its tmux pane history.
+
+    Empty list for processes without a tmux window (stopped). Captured via
+    libtmux `capture-pane` as plain, wrapped text; services are not included
+    (they are one-shot subprocess calls, not tmux windows).
+    """
+    return {name: tmux.get_logs(name, lines) for name in process_names()}
 
 @router.post(
     "/start_process",

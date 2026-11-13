@@ -59,7 +59,7 @@ body {
     @apply flex items-center justify-between gap-3 pl-4 pr-3 py-2 border-b border-hairline shrink-0;
   }
   .panel-body {
-    @apply flex-1 min-h-0 overflow-y-auto px-4 py-2;
+    @apply flex-1 min-h-0 px-4 py-2;
   }
   .panel-footer {
     @apply flex w-full border-t border-hairline shrink-0;
