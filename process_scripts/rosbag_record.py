@@ -55,7 +55,7 @@ FRAME_TOPICS = [
 # silently never subscribe to it, even though the publisher is running.
 EVENT_TOPICS = [
     "/data_collection/events",
-g
+]
 
 TOPICS = SENSOR_TOPICS + ROBOT_TOPICS + FRAME_TOPICS + EVENT_TOPICS
 

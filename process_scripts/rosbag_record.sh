@@ -1,1 +1,1 @@
-python3 grinding_rosbag.py ~/rgt_rosbags/ -n $1
+python3 rosbag_record.py ~/rgt_rosbags/ -n $1
