@@ -1,0 +1,1 @@
+ros2 launch realsense2_camera rs_launch.py pointcloud.enable:=false align_depth.enable:=false rgb_camera.color_profile:=1280x720x15 depth_module.depth_profile:=1280x720x15 pointcloud.stream_filter:=1 enable_gyro:=false depth_module.infra_profile:=1280x720x15 enable_infra1:=true enable_infra2:=true camera_name:=tool_side_cam serial_no:=_419222301372 camera_namespace:=/

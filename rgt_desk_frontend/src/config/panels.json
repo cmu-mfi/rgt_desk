@@ -1,0 +1,240 @@
+{
+  "options": {
+    "robots": [
+      { "label": "UR 20", "value": "ur20" },
+      { "label": "Nex 10", "value": "nex10" }
+    ],
+    "tools": [
+      { "label": "None", "value": "" },
+      { "label": "Sander", "value": "sander" },
+      { "label": "Grinder", "value": "grinder" },
+      { "label": "Gelsight Vision", "value": "gelsight_vision" }
+    ],
+    "locations": [
+      { "label": "Tray", "value": "tray" },
+      { "label": "UR 20", "value": "ur20" },
+      { "label": "Nex 10", "value": "nex10" }
+    ],
+    "pins": [
+      { "label": "Pin 00", "value": 0 },
+      { "label": "Pin 01", "value": 1 },
+      { "label": "Pin 02", "value": 2 },
+      { "label": "Pin 03", "value": 3 },
+      { "label": "Pin 04", "value": 4 },
+      { "label": "Pin 05", "value": 5 },
+      { "label": "Pin 06", "value": 6 },
+      { "label": "Pin 07", "value": 7 },
+      { "label": "Pin 08", "value": 8 },
+      { "label": "Pin 09", "value": 9 },
+      { "label": "Pin 10", "value": 10 },
+      { "label": "Pin 11", "value": 11 },
+      { "label": "Pin 12", "value": 12 },
+      { "label": "Pin 13", "value": 13 },
+      { "label": "Pin 14", "value": 14 },
+      { "label": "Pin 15", "value": 15 },
+      { "label": "Pin 16", "value": 16 }
+    ],
+    "states": [
+      { "label": "Low", "value": 0 },
+      { "label": "High", "value": 1 }
+    ]
+  },
+  "tabs": {
+    "main": {
+      "columns": 2,
+      "panels": [
+        {
+          "type": "process",
+          "id": "ur20",
+          "title": "UR 20",
+          "description": "Start UR20 ROS2 driver, moveit & ur_robot_manager. Optionally run the system with mock hardware.",
+          "params": [
+            { "key": "use_mock_hardware", "type": "toggle", "label": "Use Mock Hardware" }
+          ]
+        },
+        {
+          "type": "process",
+          "id": "nex10",
+          "title": "Nex 10",
+          "description": "Start Nex10 ROS2 driver, moveit & ynx_robot_manager. Optionally run the system with mock hardware and the ATI Force-Torque Sensor.",
+          "params": [
+            { "key": "use_mock_hardware", "type": "toggle", "label": "Use Mock Hardware" },
+            { "key": "use_ft_sensor", "type": "toggle", "label": "Use FT Sensor", "default": true }
+          ]
+        },
+        {
+          "type": "process",
+          "id": "rgt_manager",
+          "title": "RGT Manager",
+          "description": "Start the RGT Manager.",
+          "params": []
+        },
+        {
+          "type": "process",
+          "id": "foxglove_bridge",
+          "title": "Foxglove Bridge",
+          "description": "Start the Foxglove Bridge",
+          "params": []
+        }
+      ]
+    },
+    "sensors": {
+      "columns": 3,
+      "panels": [
+        {
+          "type": "process",
+          "id": "bed_side_cam",
+          "title": "Bed Side Camera",
+          "description": "Start the Bed Side Camera (realsense).",
+          "params": []
+        },
+        {
+          "type": "process",
+          "id": "bed_side_thermal",
+          "title": "Bed Side Thermal",
+          "description": "Start the Bed Side Thermal Camera (seek thermal).",
+          "params": []
+        },
+        {
+          "type": "process",
+          "id": "bed_side_audio",
+          "title": "Bed Side Audio",
+          "description": "Start the Bed Side Audio System.",
+          "params": []
+        },
+        {
+          "type": "process",
+          "id": "gripper",
+          "title": "Gripper",
+          "description": "Start the gripper controller. Optionally run with mock hardware.",
+          "params": [
+            { "key": "use_mock_hardware", "type": "toggle", "label": "Use Mock Hardware" }
+          ]
+        },
+        {
+          "type": "process",
+          "id": "tool_side_cam",
+          "title": "Tool Side Camera",
+          "description": "Start the Tool Side Camera (realsense).",
+          "params": []
+        },
+        {
+          "type": "process",
+          "id": "tool_side_gelsight",
+          "title": "Tool Side Gelsight",
+          "description": "Start the Tool Side Gelsight.",
+          "params": []
+        }
+      ]
+    },
+    "utilities": {
+      "columns": 2,
+      "panels": [
+        {
+          "type": "process",
+          "id": "spacemouse",
+          "title": "Spacemouse",
+          "description": "Start the Spacemouse Teleoperation Node.",
+          "params": [
+            { "key": "ns", "type": "select", "label": "Robot", "options": "robots" }
+          ]
+        },
+        {
+          "type": "service",
+          "id": "home",
+          "title": "Home",
+          "description": "Home the robot at a specified speed.",
+          "params": [
+            { "key": "ns", "type": "select", "label": "Robot", "options": "robots" },
+            { "key": "speed", "type": "slider", "label": "Speed (%)", "min": 0.1, "max": 1.0, "step": 0.1, "default": 0.1 }
+          ]
+        },
+        {
+          "type": "service",
+          "id": "park",
+          "title": "Park",
+          "description": "Park the robot at a specified speed.",
+          "params": [
+            { "key": "ns", "type": "select", "label": "Robot", "options": "robots" },
+            { "key": "speed", "type": "slider", "label": "Speed (%)", "min": 0.1, "max": 1.0, "step": 0.1, "default": 0.1 }
+          ]
+        },
+        {
+          "type": "service",
+          "id": "change_tool",
+          "title": "Change Tool",
+          "description": "Change the tool of a specified robot.",
+          "params": [
+            { "key": "robot", "type": "select", "label": "Robot", "options": "robots" },
+            { "key": "tool", "type": "select", "label": "Tool", "options": "tools" }
+          ]
+        },
+        {
+          "type": "service",
+          "id": "override_tool_location",
+          "title": "Override Tool Location",
+          "description": "Override the location of a specific tool.",
+          "params": [
+            { "key": "tool", "type": "select", "label": "Tool", "options": "tools" },
+            { "key": "location", "type": "select", "label": "Location", "options": "locations" }
+          ]
+        },
+        {
+          "type": "service",
+          "id": "set_io",
+          "title": "Set IO",
+          "description": "Set the state of any IO pin on a specified robot.",
+          "params": [
+            { "key": "robot", "type": "select", "label": "Robot", "options": "robots" },
+            { "key": "pin", "type": "select", "label": "Pin", "options": "pins", "default": 0 },
+            { "key": "state", "type": "select", "label": "State", "options": "states", "default": 0 }
+          ]
+        },
+        {
+          "type": "process",
+          "id": "rosbag_record",
+          "title": "Rosbag Record",
+          "description": "Record robot and sensor data in a rosbag. Name: mfirgt_<timestamp>_<name>. Path: /home/mfi/rgt_rosbags/",
+          "params": [
+            { "key": "name", "type": "text", "label": "Recording Name", "default": "", "maxLength": 30 }
+          ]
+        }
+      ]
+    },
+    "space_panda": {
+      "columns": 2,
+      "panels": [
+        {
+          "type": "process",
+          "id": "panda",
+          "title": "Panda",
+          "description": "Start the Franka Emika Panda Controller.",
+          "params": []
+        },
+        {
+          "type": "process",
+          "id": "space_panda_link",
+          "title": "Space Panda Link",
+          "description": "Start the Space Panda Link between the Franka Emika Panda and the UR20.",
+          "params": []
+        },
+        {
+          "type": "service",
+          "id": "space_panda_link_parameters",
+          "title": "Space Panda Link Parameters",
+          "description": "Change the Space Panda Link Parameters on the fly.",
+          "span": 2,
+          "params": [
+            { "key": "mimicing_scale", "type": "slider", "label": "Mimicing Scale", "min": 0.1, "max": 2.0, "step": 0.1, "default": 1.0 },
+            { "key": "wrench_passthrough_force_scale", "type": "slider", "label": "Force Scale", "min": 0.0, "max": 1.0, "step": 0.1, "default": 0.3 },
+            { "key": "wrench_passthrough_torque_scale", "type": "slider", "label": "Torque Scale", "min": 0.0, "max": 1.0, "step": 0.1, "default": 0.3 },
+            { "key": "damping_value", "type": "slider", "label": "Damping Value", "min": 10, "max": 150, "step": 10, "default": 100.0 },
+            { "key": "mimicing_enabled", "type": "toggle", "label": "Mimicing Enabled" },
+            { "key": "wrench_passthrough_enabled", "type": "toggle", "label": "Wrench Passthrough Enabled" },
+            { "key": "damping_enabled", "type": "toggle", "label": "Damping Enabled" }
+          ]
+        }
+      ]
+    }
+  }
+}

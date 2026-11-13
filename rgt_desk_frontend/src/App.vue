@@ -16,52 +16,53 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="h-screen w-screen flex flex-col bg-black text-gray-200 font-sans">
-    <header class="flex items-center justify-between px-4 py-2 bg-black border-b-1 border-gray-700 backdrop-blur-md">
-      <div class="flex items-center gap-3">
-        <div class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
-        <h1 class="text-xl font-bold tracking-tight">RGT Desk</h1>
+  <div class="h-dvh w-full flex flex-col bg-console text-zinc-200 font-sans">
+    <header class="flex items-center justify-between gap-3 px-4 py-2.5 bg-console border-b border-hairline shrink-0">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <span class="led w-2 h-2 bg-accent animate-pulse"></span>
+        <h1 class="font-mono text-base font-semibold tracking-[0.25em] text-zinc-100 whitespace-nowrap">RGT DESK</h1>
+        <p class="hidden md:block font-mono text-xs text-zinc-500 border-l border-hairline pl-2.5 ml-1 whitespace-nowrap truncate">Control panel for the Robot Grinding Testbed system</p>
       </div>
-      
-      <nav class="flex bg-black p-1 rounded-xl border border-gray-800 text-gray-500">
-        <RouterLink 
-          to="/main" 
-          class="nav-link"
-          exact-active-class="bg-gray-700 text-white"
+
+      <nav class="flex flex-nowrap bg-panel border border-hairline p-px text-zinc-500">
+        <RouterLink
+          to="/main"
+          class="seg-link"
+          exact-active-class="bg-zinc-100 text-zinc-950"
         >
-          <LayoutDashboard :size="18" /> <span>Main</span>
+          <LayoutDashboard :size="14" /> <span class="hidden sm:inline">Main</span>
         </RouterLink>
 
-        <RouterLink 
-          to="/sensors" 
-          class="nav-link"
-          exact-active-class="bg-gray-700 text-white"
+        <RouterLink
+          to="/sensors"
+          class="seg-link"
+          exact-active-class="bg-zinc-100 text-zinc-950"
         >
-          <Activity :size="18" /> <span>Sensors</span>
-        </RouterLink>
-        
-        <RouterLink 
-          to="/utilities" 
-          class="nav-link"
-          exact-active-class="bg-gray-700 text-white"
-        >
-          <Toolbox :size="18" /> <span>Utilities</span>
+          <Activity :size="14" /> <span class="hidden sm:inline">Sensors</span>
         </RouterLink>
 
-        <RouterLink 
-          to="/space_panda" 
-          class="nav-link"
-          exact-active-class="bg-gray-700 text-white"
+        <RouterLink
+          to="/utilities"
+          class="seg-link"
+          exact-active-class="bg-zinc-100 text-zinc-950"
         >
-          <Panda :size="18" /> <span>Space Panda</span>
+          <Toolbox :size="14" /> <span class="hidden sm:inline">Utilities</span>
+        </RouterLink>
+
+        <RouterLink
+          to="/space_panda"
+          class="seg-link"
+          exact-active-class="bg-zinc-100 text-zinc-950"
+        >
+          <Panda :size="14" /> <span class="hidden sm:inline">Space Panda</span>
         </RouterLink>
       </nav>
     </header>
 
-    <main class="flex-1 overflow-hidden relative">
-      <router-view v-slot="{ Component, route }"> 
+    <main class="flex-1 min-h-0 overflow-y-auto md:overflow-hidden relative">
+      <router-view v-slot="{ Component, route }">
         <transition name="fade" mode="out-in">
-        <component :is="Component" :key="route.path" /> 
+        <component :is="Component" :key="route.path" />
         </transition>
       </router-view>
     </main>
@@ -71,22 +72,19 @@ onUnmounted(() => {
 <style scoped>
 @reference "tailwindcss";
 
-.RouterLink {
-  @apply bg-red-500;
+.seg-link {
+  @apply flex items-center justify-center gap-1.5 px-2.5 py-2 sm:px-4 sm:py-1.5 font-mono text-[13px] font-medium uppercase tracking-wider transition-colors duration-150;
 }
 
-.nav-link {
-  @apply flex items-center gap-2 px-5 py-2 rounded-lg transition-all duration-200 text-sm font-medium;
-}
-
-.nav-link:hover {
-  @apply text-gray-50;
+.seg-link:hover {
+  @apply text-zinc-200;
 }
 
 /* Tab Transition Animation */
 .fade-enter-active, .fade-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: opacity 0.15s ease;
 }
-.fade-enter-from { opacity: 0; transform: translateY(10px); }
-.fade-leave-to { opacity: 0; transform: translateY(-10px); }
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
 </style>

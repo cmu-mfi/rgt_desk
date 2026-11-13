@@ -1,153 +1,112 @@
 from fastapi import APIRouter, HTTPException
+from typing import Dict
 import tmux
-from models import StartProcessRequest, StopProcessRequest, RunServiceRequest
+from models import (
+    StartProcessRequest,
+    StopProcessRequest,
+    RunServiceRequest,
+    ProcessStartResponse,
+    ProcessStopResponse,
+    ServiceExecutionResponse,
+)
+from process_config import (
+    UnknownNameError,
+    MissingParamError,
+    build_command,
+    process_names,
+)
 from process_monitor import process_monitor
 import subprocess
 
 router = APIRouter()
 
-@router.get("/get_status")
+@router.get(
+    "/get_status",
+    tags=["status"],
+    summary="Status of every configured process",
+    response_model=Dict[str, str],
+    )
 def get_status():
-    process_status = process_monitor.get_status()
-    return process_status
+    """Map of process name -> lifecycle status, one entry per configured process.
 
-@router.post("/start_process")
+    Derived by the background monitor (`process_monitor.py`):
+    `running` = tmux window AND matching ROS node visible, `started` = window
+    only, `error` = process-specific fault detected (ur20/nex10 only),
+    `stopped` = no window.
+    """
+    return process_monitor.get_status()
+
+@router.post(
+    "/start_process",
+    tags=["processes"],
+    summary="Start a long-running process",
+    response_model=ProcessStartResponse,
+    responses={
+        404: {"description": "Process name not found in config.json"},
+        400: {"description": "A param required by the command template is missing"},
+        },
+    )
 def start_process(req: StartProcessRequest):
-    if req.name == "ur20":
-        use_mock_hardware = bool((req.params or {}).get("use_mock_hardware", False))
-        command = f"../process_scripts/ur20.sh {use_mock_hardware}"
-        tmux.start_process(req.name, command)
-    elif req.name == "nex10":
-        use_mock_hardware = bool((req.params or {}).get("use_mock_hardware", False))
-        use_ft_sensor = bool((req.params or {}).get("use_ft_sensor", False))
-        command = f"../process_scripts/nex10.sh {use_mock_hardware} {use_ft_sensor}"
-        tmux.start_process(req.name, command)
-    elif req.name == "rgt_manager":
-        command = "../process_scripts/rgt_manager.sh"
-        tmux.start_process(req.name, command)
-    elif req.name == "foxglove_bridge":
-        command = "../process_scripts/foxglove_bridge.sh"
-        tmux.start_process(req.name, command)
-    elif req.name == "spacemouse":
-        command = f"../process_scripts/spacemouse.sh {req.params['ns']}"
-        tmux.start_process(req.name, command)
-    elif req.name == "bed_side_cam":
-        command = "../process_scripts/bed_side_cam.sh"
-        tmux.start_process(req.name, command)
-    elif req.name == "bed_side_thermal":
-        command = "../process_scripts/bed_side_thermal.sh"
-        tmux.start_process(req.name, command)
-    elif req.name == "bed_side_audio":
-        command = "../process_scripts/bed_side_audio.sh"
-        tmux.start_process(req.name, command)
-    elif req.name == "panda":
-        command = "../process_scripts/panda.sh"
-        tmux.start_process(req.name, command)
-    elif req.name == "space_panda_link":
-        command = "../process_scripts/space_panda_link.sh"
-        tmux.start_process(req.name, command)
-    else:
-        raise HTTPException(status_code=404, detail=f"Process '{req.name}' is not recognized.")
+    """Fills the process's `config.json` command template with `params` and opens a tmux window named after the process.
+
+    Reports `started` even if the window already exists (the start is a no-op then).
+    """
+    try:
+        command = build_command("process", req.name, req.params)
+    except UnknownNameError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except MissingParamError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    tmux.start_process(req.name, command)
 
     return {"status": "started", "name": req.name}
 
-@router.post("/stop_process")
+@router.post(
+    "/stop_process",
+    tags=["processes"],
+    summary="Stop a long-running process",
+    response_model=ProcessStopResponse,
+    responses={
+        404: {"description": "Process name not found in config.json"},
+        },
+    )
 def stop_process(req: StopProcessRequest):
-    if req.name == "ur20":
-        tmux.stop_process(req.name)
-    elif req.name == "nex10":
-        tmux.stop_process(req.name)
-    elif req.name == "rgt_manager":
-        tmux.stop_process(req.name)
-    elif req.name == "foxglove_bridge":
-        tmux.stop_process(req.name)
-    elif req.name == "spacemouse":
-        tmux.stop_process(req.name)
-    elif req.name == "bed_side_cam":
-        tmux.stop_process(req.name)
-    elif req.name == "bed_side_thermal":
-        tmux.stop_process(req.name)
-    elif req.name == "bed_side_audio":
-        tmux.stop_process(req.name)
-    elif req.name == "panda":
-        tmux.stop_process(req.name)
-    elif req.name == "space_panda_link":
-        tmux.stop_process(req.name)
-    else:
+    """Sends Ctrl-C to the process's tmux window, waits a second, then kills it."""
+    if req.name not in process_names():
         raise HTTPException(status_code=404, detail=f"Process '{req.name}' is not recognized.")
+    tmux.stop_process(req.name)
 
     return {"status": "stopped", "name": req.name}
 
-@router.post("/execute_service")
+@router.post(
+    "/execute_service",
+    tags=["services"],
+    summary="Run a one-shot service script",
+    response_model=ServiceExecutionResponse,
+    responses={
+        404: {"description": "Service name not found in config.json"},
+        400: {"description": "A param required by the command template is missing"},
+        },
+    )
 def execute_service(req: RunServiceRequest):
-    if req.name == "home":
-        command = f"../service_scripts/home.sh {req.params['ns']} {req.params['speed']}"
-        try:
-            subprocess.run(
-                    command,
-                    shell=True,
-                    capture_output=False,
-                    text=False,
-                    )
-        except:
-            return {"status": "failed", "name": req.name}
-    elif req.name == "park":
-        command = f"../service_scripts/park.sh {req.params['ns']} {req.params['speed']}"
-        try:
-            subprocess.run(
-                    command,
-                    shell=True,
-                    capture_output=False,
-                    text=False,
-                    )
-        except:
-            return {"status": "failed", "name": req.name}
-    elif req.name == "change_tool":
-        command = f"../service_scripts/change_tool.sh {req.params['robot']} {req.params['tool']}"
-        try:
-            subprocess.run(
-                    command,
-                    shell=True,
-                    capture_output=False,
-                    text=False,
-                    )
-        except:
-            return {"status": "failed", "name": req.name}
-    elif req.name == "override_tool_location":
-        command = f"../service_scripts/override_tool_location.sh {req.params['tool']} {req.params['location']}"
-        try:
-            subprocess.run(
-                    command,
-                    shell=True,
-                    capture_output=False,
-                    text=False,
-                    )
-        except:
-            return {"status": "failed", "name": req.name}
-    elif req.name == "space_panda_link_parameters":
-        command = f"../service_scripts/space_panda_link_parameters.sh {str(float(req.params['mimicing_scale']))} {str(float(req.params['wrench_passthrough_force_scale']))} {str(float(req.params['wrench_passthrough_torque_scale']))} {str(float(req.params['damping_value']))} {req.params['mimicing_enabled']} {req.params['wrench_passthrough_enabled']} {req.params['damping_enabled']}"
-        print(command)
-        try:
-            subprocess.run(
-                    command,
-                    shell=True,
-                    capture_output=False,
-                    text=False,
-                    )
-        except:
-            return {"status": "failed", "name": req.name}
-    elif req.name == "set_io":
-        command = f"../service_scripts/set_io.sh {req.params['robot']} {req.params['pin']} {req.params['state']}"
-        try:
-            subprocess.run(
-                    command,
-                    shell=True,
-                    capture_output=False,
-                    text=False,
-                    )
-        except:
-            return {"status": "failed", "name": req.name}
-    else:
-        raise HTTPException(status_code=404, detail=f"Service '{req.name}' is not recognized.")
+    """Fills the service's `config.json` command template with `params` and runs it synchronously (blocks until the script exits).
+
+    Reports `failed` if the script raises; script output is not captured.
+    """
+    try:
+        command = build_command("service", req.name, req.params)
+    except UnknownNameError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except MissingParamError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    try:
+        subprocess.run(
+                command,
+                shell=True,
+                capture_output=False,
+                text=False,
+                )
+    except:
+        return {"status": "failed", "name": req.name}
 
     return {"status": "executed", "name": req.name}
