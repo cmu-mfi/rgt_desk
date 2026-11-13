@@ -80,8 +80,8 @@ uvicorn main:app --host 0.0.0.0 --port 8000
 
 ## Deployment
 
-- `systemd_services/` unit files are symlinked into `/etc/systemd/system` by `install.sh`.
-- The backend binds `192.168.19.10:8000` with `ROS_DOMAIN_ID=19`; unit files assume `/home/mfi/repos/rgt_desk` and `User=mfi`.
+- `systemd_services/` unit files are templates; `install.sh` substitutes the invoking user, the repo path, and the ROS 2 workspace it prompts for, then writes the rendered units into `/etc/systemd/system`.
+- The backend binds `192.168.19.10:8000` with `ROS_DOMAIN_ID=19`; the units run as whichever user runs `install.sh`.
 - Code changes go live with:
 
   ```sh

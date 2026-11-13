@@ -22,14 +22,14 @@ nvm install 24
 
 # Install
 
-The systemd unit files hardcode `User=mfi` and the install path `/home/mfi/repos/rgt_desk`, so on the target machine clone the repo to that location as that user. Everything below assumes the repo is at `~/repos/rgt_desk`.
+The install is user- and location-agnostic: `install.sh` renders the unit templates in `systemd_services/*.service.template` for whoever runs it, based on the directory the repo is cloned to. The only thing it asks for is the path to your ROS 2 workspace (default `~/repos/ros2_ws`; it must be built). Everything below assumes the repo is at `~/repos/rgt_desk`.
 
 1. Clone this repo:
 ```bash
 git clone https://github.com/alexmnr/rgt_desk.git ~/repos/rgt_desk
 ```
 
-2. Run the install script (needs sudo). It creates the backend virtualenv and installs its Python dependencies, links the active `node`/`npm` into `/usr/local/bin` so the systemd unit can find them regardless of how Node was installed, installs the frontend dependencies and builds it, symlinks the unit files into `/etc/systemd/system`, then enables and starts both services:
+2. Run the install script (needs sudo). It creates the backend virtualenv and installs its Python dependencies, links the active `node`/`npm` into `/usr/local/bin` so the systemd unit can find them regardless of how Node was installed, installs the frontend dependencies and builds it, writes the rendered unit files into `/etc/systemd/system`, then enables and starts both services:
 ```bash
 cd ~/repos/rgt_desk && ./install.sh
 ```

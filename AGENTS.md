@@ -20,6 +20,6 @@ Process name = tmux window name = status key = frontend id = `config.json` key:
 
 - Backend only works when run from inside `rgt_desk_backend/`: imports are flat and scripts are invoked as `../process_scripts/...` relative to the working directory.
 - Backend imports `rclpy`, `ur_dashboard_msgs`, `controller_manager_msgs` — these come from ROS 2 Jazzy (`/opt/ros/jazzy/setup.bash` + external `~/repos/ros2_ws/install/setup.bash`), NOT `requirements.txt`. A venv built from requirements.txt alone fails to import.
-- Deploy target is a specific host: unit files hardcode `User=mfi`, `/home/mfi/repos/rgt_desk`, backend binds `192.168.19.10:8000`, `ROS_DOMAIN_ID=19`. `sudo systemctl ...` only works on that machine, not on dev checkouts.
+- `systemd_services/` unit files are templates with `@PLACEHOLDER@s`; `install.sh` renders them for the invoking user, the repo location, and a prompted ROS 2 workspace path. Backend binds `192.168.19.10:8000`, `ROS_DOMAIN_ID=19`. `sudo systemctl ...` only works on the deploy machine, not on dev checkouts.
 - Code changes go live via `sudo systemctl restart rgt_desk_backend.service rgt_desk_frontend.service`. The frontend unit runs `npm install && npm run build` on every service start, so manual builds aren't needed before restart (but startup takes up to 120s).
 - Node engines: `^22.18.0 || >=24.12.0` (README recommends nvm 24; the frontend unit runs `/usr/local/bin/npm`, which install.sh links to the host's active node — no nvm path is hardcoded in the unit).

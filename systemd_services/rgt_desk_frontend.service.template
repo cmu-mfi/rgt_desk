@@ -1,10 +1,13 @@
+# Template: install.sh substitutes the @PLACEHOLDER@s and writes the rendered
+# unit to /etc/systemd/system. Do not symlink this file directly.
+
 [Unit]
 Description=RGT Desk Frontend
 After=network.target
 
 [Service]
-User=mfi
-WorkingDirectory=/home/mfi/repos/rgt_desk/rgt_desk_frontend
+User=@USER@
+WorkingDirectory=@REPO_DIR@/rgt_desk_frontend
 AmbientCapabilities=CAP_NET_BIND_SERVICE
 CapabilityBoundingSet=CAP_NET_BIND_SERVICE
 
