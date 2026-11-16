@@ -30,9 +30,10 @@ def get_status():
     """Map of process name -> lifecycle status, one entry per configured process.
 
     Derived by the background monitor (`process_monitor.py`):
-    `running` = tmux window AND matching ROS node visible, `started` = window
-    only, `error` = process-specific fault detected (ur20/nex10 only),
-    `stopped` = no window.
+    `stopped` = idle or explicitly stopped, `started` = launched and waiting
+    for its ROS node, `running` = matching ROS node visible, `error` = a
+    previously visible node disappeared. UR20/NEX10 match `ur_robot_manager`
+    and `ynx_robot_manager`; all other processes match their own node name.
     """
     return process_monitor.get_status()
 
@@ -72,7 +73,7 @@ def start_process(req: StartProcessRequest):
         raise HTTPException(status_code=404, detail=str(e))
     except MissingParamError as e:
         raise HTTPException(status_code=400, detail=str(e))
-    tmux.start_process(req.name, command)
+    process_monitor.start_process(req.name, command)
 
     return {"status": "started", "name": req.name}
 
@@ -89,7 +90,7 @@ def stop_process(req: StopProcessRequest):
     """Sends Ctrl-C to the process's tmux window, waits a second, then kills it."""
     if req.name not in process_names():
         raise HTTPException(status_code=404, detail=f"Process '{req.name}' is not recognized.")
-    tmux.stop_process(req.name)
+    process_monitor.stop_process(req.name)
 
     return {"status": "stopped", "name": req.name}
 

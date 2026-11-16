@@ -1,45 +1,35 @@
 <script setup>
-import { ChevronDown } from '@lucide/vue';
+import { computed, useId } from 'vue';
 
-defineProps({
-  modelValue: {
-    type: [String, Number],
-    required: true
-  },
-  label: {
-    type: String,
-    required: true
-  },
-  options: {
-    type: Array,
-    required: true
-    // Expected format: [{ label: 'Option 1', value: 'opt1' }, ...]
-  }
+const props = defineProps({
+  modelValue: { type: [String, Number], required: true },
+  label: { type: String, required: true },
+  options: { type: Array, required: true },
 });
-
-defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue']);
+const id = useId();
+const value = computed({ get: () => props.modelValue, set: value => emit('update:modelValue', value) });
+const segmented = computed(() => props.options.length > 0 && props.options.length <= 4);
+const hasEmptyOption = computed(() => props.options.some(option => option.value === ''));
 </script>
 
 <template>
-  <div class="flex items-center justify-between gap-3 py-2">
-    <label class="text-[16px] font-medium text-zinc-300 whitespace-nowrap">
-      {{ label }}
-    </label>
-    <div class="relative w-full max-w-[160px]">
-      <select
-        :value="modelValue"
-        @change="$emit('update:modelValue', $event.target.value)"
-        class="w-full appearance-none bg-zinc-900 border border-hairline text-zinc-200 font-mono text-[15px] px-2 py-1.5 pr-7 outline-none focus:border-accent transition-colors cursor-pointer"
-      >
-        <option
-          v-for="option in options"
-          :key="option.value"
-          :value="option.value"
-        >
-          {{ option.label }}
-        </option>
+  <div class="param-row" :class="{ 'segmented-row': segmented, 'wide-options': segmented && options.length === 4 }">
+    <template v-if="segmented">
+      <span :id="`${id}-label`" class="param-label">{{ label }}</span>
+      <div class="segmented-control" role="radiogroup" :aria-labelledby="`${id}-label`">
+        <label v-for="option in options" :key="option.value" class="segment-option">
+          <input v-model="value" class="sr-only" type="radio" :name="id" :value="option.value" />
+          <span>{{ option.label }}</span>
+        </label>
+      </div>
+    </template>
+    <template v-else>
+      <label :for="id" class="param-label">{{ label }}</label>
+      <select :id="id" v-model="value" class="field">
+        <option v-if="!hasEmptyOption" disabled value="">Select {{ label.toLowerCase() }}…</option>
+        <option v-for="option in options" :key="option.value" :value="option.value">{{ option.label }}</option>
       </select>
-      <ChevronDown :size="12" class="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
-    </div>
+    </template>
   </div>
 </template>

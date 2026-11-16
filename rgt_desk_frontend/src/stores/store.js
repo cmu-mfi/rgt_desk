@@ -46,24 +46,38 @@ export const useStore = defineStore('store', {
     },
     service_status: buildInitialServiceStatus(),
     configs: buildInitialConfigs(),
+    connection: 'connecting',
+    pending: {},
+    feedback: {},
+    fetchingStatus: false,
+    fetchingLogs: false,
     pollingInterval: null
   }),
   actions: {
     async fetchStatus() {
+      if (this.fetchingStatus) return;
+      this.fetchingStatus = true;
       try {
         const response = await api.getStatus();
         this.process_status = response.data;
+        this.connection = 'connected';
       } catch (error) {
-        console.error("Failed to fetch status from backend:", error);
+        this.connection = 'disconnected';
+      } finally {
+        this.fetchingStatus = false;
       }
     },
 
     async fetchLogs() {
+      if (this.fetchingLogs) return;
+      this.fetchingLogs = true;
       try {
         const response = await api.getLogs();
         this.process_logs = response.data;
       } catch (error) {
         console.error("Failed to fetch logs from backend:", error);
+      } finally {
+        this.fetchingLogs = false;
       }
     },
 
@@ -85,33 +99,66 @@ export const useStore = defineStore('store', {
       }
     },
 
+    configValid(id) {
+      const panel = Object.values(panelsConfig.tabs).flatMap(tab => tab.panels).find(panel => panel.id === id);
+      return (panel?.params ?? []).every(param => {
+        if (param.type !== 'select') return true;
+        const options = Array.isArray(param.options) ? param.options : panelsConfig.options[param.options] ?? [];
+        return options.some(option => option.value === this.configs[id][param.key]);
+      });
+    },
+
     async startProcess(id, configData = this.configs[id] || {}) {
-      console.log(`Starting process: ${id}`, configData);
+      if (this.pending[id] || this.connection !== 'connected' || !this.configValid(id)) return;
+      this.pending[id] = 'start';
+      delete this.feedback[id];
       try {
         await api.startProcess(id, configData);
+        this.feedback[id] = { text: 'Launch requested.' };
+        await this.fetchStatus();
       } catch (error) {
-        console.error(`Failed to start process ${id}:`, error);
+        this.setActionError(id, error);
+      } finally {
+        delete this.pending[id];
       }
     },
 
     async stopProcess(id) {
-      console.log(`Stopping process: ${id}`);
+      if (this.pending[id] || this.connection !== 'connected') return;
+      this.pending[id] = 'stop';
+      delete this.feedback[id];
       try {
         await api.stopProcess(id);
+        this.feedback[id] = { text: 'Stop requested.' };
+        await this.fetchStatus();
       } catch (error) {
-        console.error(`Failed to stop process ${id}:`, error);
+        this.setActionError(id, error);
+      } finally {
+        delete this.pending[id];
       }
     },
 
     async executeService(id, configData = this.configs[id] || {}) {
-      console.log(`Executing service: ${id}`, configData);
+      if (this.service_status[id] === 'executing' || this.connection !== 'connected' || !this.configValid(id)) return;
+      this.service_status[id] = 'executing';
+      delete this.feedback[id];
       try {
-        this.service_status[id] = "executing"
-        await api.executeService(id, configData);
-        this.service_status[id] = "idle"
+        const response = await api.executeService(id, configData);
+        if (response.data.status === 'failed') throw new Error('The backend reported that the request failed.');
+        this.feedback[id] = { text: 'Backend request completed.' };
       } catch (error) {
-        console.error(`Failed to execute service ${id}:`, error);
+        this.setActionError(id, error);
+      } finally {
+        this.service_status[id] = 'idle';
       }
+    },
+
+    setActionError(id, error) {
+      const detail = error.response?.data?.detail;
+      this.feedback[id] = {
+        error: true,
+        text: typeof detail === 'string' ? detail : error.response ? 'Request failed. Check the backend and try again.' : error.message === 'Network Error' ? 'Unable to reach the backend. Check the connection before trying again.' : error.message || 'Request failed. Please try again.',
+      };
     },
   }
 });

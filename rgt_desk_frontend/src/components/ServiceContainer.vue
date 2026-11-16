@@ -1,71 +1,30 @@
 <script setup>
 import { computed } from 'vue';
+import { AlertCircle, ArrowRight, Check, LoaderCircle } from '@lucide/vue';
 import { useStore } from '../stores/store';
-
+import PanelIcon from './PanelIcon.vue';
 const props = defineProps({
-  title: {
-    type: String,
-    required: true
-  },
-  id: {
-    type: String,
-    required: true
-  },
-  description: {
-    type: String,
-    default: ''
-  },
+  title: { type: String, required: true }, id: { type: String, required: true },
+  description: { type: String, default: '' },
+  note: { type: String, default: '' }, hasParams: { type: Boolean, default: false },
+  showLogs: Boolean, logsOpen: Boolean,
 });
-
-const emit = defineEmits(['execute']);
+const emit = defineEmits(['execute', 'start', 'stop', 'logs-change']);
 const store = useStore();
-const STATUS_COLORS = {
-  executing: '#1490de',
-  idle:      '#52525b', // zinc-600
-  unknown:   '#52525b', // zinc-600 (fallback)
-};
-const currentStatus = computed(() => {
-  if (!props.id || !store.service_status[props.id]) return 'unknown';
-  return store.service_status[props.id];
-});
-const statusText = computed(() => currentStatus.value);
-const statusColor = computed(() => STATUS_COLORS[currentStatus.value] || STATUS_COLORS.unknown);
-const isBlinking = computed(() => currentStatus.value === 'executing');
-const ledGlow = computed(() =>
-  currentStatus.value === 'executing' ? `0 0 6px ${statusColor.value}` : 'none'
-);
-
+const executing = computed(() => store.service_status[props.id] === 'executing');
+const feedback = computed(() => store.feedback[props.id]);
+const canExecute = computed(() => store.connection === 'connected' && !executing.value && store.configValid(props.id));
+const labels = { home: 'Home robot', park: 'Park robot', change_tool: 'Change tool', override_tool_location: 'Apply location', set_io: 'Set output', space_panda_link_parameters: 'Apply parameters' };
 </script>
-
 <template>
-  <div class="panel">
-    <span
-      class="absolute left-0 top-0 bottom-0 w-0.5"
-      :style="{ backgroundColor: statusColor }"
-    ></span>
-
-    <header class="panel-header">
-      <h3 class="m-0 text-[18px] font-semibold uppercase tracking-wider text-zinc-100">{{ title }}</h3>
-      <div class="flex items-center gap-1.5">
-        <span
-          class="led"
-          :class="{ 'animate-pulse': isBlinking }"
-          :style="{ backgroundColor: statusColor, boxShadow: ledGlow }"
-        ></span>
-        <span class="micro-label" :style="{ color: statusColor }">{{ statusText }}</span>
-      </div>
-    </header>
-
-    <p v-if="description" class="pl-4 pr-3 mt-1 mb-3 text-[13px] leading-snug text-zinc-500">{{ description }}</p>
-
-    <div class="panel-body">
-      <slot></slot>
-    </div>
-
+  <article class="panel" :data-status="executing ? 'executing' : 'idle'" :aria-labelledby="`${id}-title`">
+    <header class="panel-header"><PanelIcon :id="id" /><h2 class="panel-title" :id="`${id}-title`">{{ title }}</h2><span class="status-badge"><span class="status-dot" />{{ executing ? 'Executing' : 'Idle' }}</span></header>
+    <p v-if="description" class="panel-description">{{ description }}</p>
+    <fieldset class="panel-body" :disabled="executing"><legend class="sr-only">{{ title }} parameters</legend><slot /></fieldset>
+    <p v-if="note" class="panel-note">{{ note }}</p>
     <footer class="panel-footer">
-      <button @click="emit('execute')" class="key-btn hover:text-blue-400 hover:bg-blue-500/10 active:text-blue-300 active:bg-blue-500/15">
-        Execute
-      </button>
+      <button class="action-btn" @click="emit('execute')" :disabled="!canExecute" :aria-label="`${labels[id] ?? 'Execute'} — ${title}`"><LoaderCircle v-if="executing" :size="13" class="spin" /><ArrowRight v-else :size="13" />{{ executing ? 'Executing…' : labels[id] ?? 'Execute' }}</button>
+      <div v-if="feedback" class="action-message" :class="{ error: feedback.error }" :role="feedback.error ? 'alert' : 'status'"><component :is="feedback.error ? AlertCircle : Check" :size="13" />{{ feedback.text }}</div>
     </footer>
-  </div>
+  </article>
 </template>

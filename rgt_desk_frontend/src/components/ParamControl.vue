@@ -40,6 +40,7 @@ function resolveOptions(param) {
     :min="param.min"
     :max="param.max"
     :step="param.step"
+    :format="param.format"
     @update:modelValue="$emit('update:modelValue', $event)"
   />
   <DropdownMenu

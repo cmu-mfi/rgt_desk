@@ -1,19 +1,20 @@
 import threading
 import subprocess
-import time
 import rclpy
 from rclpy.node import Node
 import tmux
 import process_config
-from ur_dashboard_msgs.msg import SafetyMode
-from controller_manager_msgs.msg import ControllerManagerActivity
 
 class ProcessMonitor():
+    NODE_NAMES = {
+        "ur20": "ur_robot_manager",
+        "nex10": "ynx_robot_manager",
+    }
+
     def __init__(self):
         self.status = {name: "stopped" for name in process_config.process_names()}
         self.stop_event = threading.Event()
-        self.ur20_error = False
-        self.nex10_error = False 
+        self._lock = threading.Lock()
         self._thread = None
 
     def start(self):
@@ -29,71 +30,53 @@ class ProcessMonitor():
         rclpy.init()
         monitor_node = Node('rgt_desk')
 
-        # UR20 Error Monitor
-        def ur20_error_monitor_callback(msg):
-            if msg.mode != 1:
-                self.ur20_error = True
-            else:
-                self.ur20_error = False
-        monitor_node.create_subscription(
-            SafetyMode,
-            '/ur20/io_and_status_controller/safety_mode',
-            ur20_error_monitor_callback,
-            10
-        )
-        
-        # Nex10 Error Monitor
-        def nex10_error_monitor_callback(msg):
-            for hardware_component in msg.hardware_components:
-                if hardware_component.name == "nex10":
-                    if hardware_component.state.label == "unconfigured":
-                        self.nex10_error = True
-                    else:
-                        self.nex10_error = False
-        monitor_node.create_subscription(
-            ControllerManagerActivity,
-            '/nex10/controller_manager/activity',
-            nex10_error_monitor_callback,
-            10
-        )
-        
         try:
             while not self.stop_event.is_set() and rclpy.ok():
-                # get windows
-                windows = tmux.get_windows()
-                # get nodes list
-                names_and_namespaces = monitor_node.get_node_names_and_namespaces()
-                node_paths = []
-                for name, ns in names_and_namespaces:
-                    if ns == '/':
-                        node_paths.append(f"/{name}")
-                    else:
-                        node_paths.append(f"{ns}/{name}")
-                node_list = "\n".join(node_paths)
-                # set status accordingly
-                for process_name in self.status:
-                    if process_name in windows and process_name in node_list:
-                        self.status[process_name] = "running"
-                    elif process_name in windows and process_name not in node_list:
-                        self.status[process_name] = "started"
-                    else:
-                        self.status[process_name] = "stopped"
-                # UR20 Error Check
-                if "ur20" in windows and self.ur20_error:
-                    self.status["ur20"] = "error"
-                # Nex10 Error Check
-                if "nex10" in windows and self.nex10_error:
-                    self.status["nex10"] = "error"
-                # Process all incoming callbacks
+                self._update_status(monitor_node)
                 rclpy.spin_once(monitor_node, timeout_sec=0.1)
-                time.sleep(1.0)
+                self.stop_event.wait(1.0)
                 
         finally:
             monitor_node.destroy_node()
             rclpy.shutdown()
 
+    def _update_status(self, monitor_node):
+        # Serialize graph snapshots with start/stop so stale observations cannot
+        # undo an explicit stop or apply to a newly started process.
+        with self._lock:
+            windows = set(tmux.get_windows())
+            node_names = {
+                name for name, _ in monitor_node.get_node_names_and_namespaces()
+            }
+            for process_name, status in self.status.items():
+                if status == "stopped":
+                    if process_name not in windows:
+                        continue
+                    # Adopt processes already in tmux when the backend starts.
+                    status = "started"
+                node_name = self.NODE_NAMES.get(process_name, process_name)
+                if node_name in node_names:
+                    self.status[process_name] = "running"
+                elif status in ("running", "error"):
+                    self.status[process_name] = "error"
+                else:
+                    self.status[process_name] = "started"
+
+    def start_process(self, name, command):
+        with self._lock:
+            already_started = name in tmux.get_windows()
+            tmux.start_process(name, command)
+            if not already_started or self.status[name] == "stopped":
+                self.status[name] = "started"
+
+    def stop_process(self, name):
+        with self._lock:
+            tmux.stop_process(name)
+            self.status[name] = "stopped"
+
     def get_status(self):
-        return self.status
+        with self._lock:
+            return self.status.copy()
 
     def run_command(self, command, timeout_seconds):
         try:

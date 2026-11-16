@@ -36,10 +36,14 @@ Errors: an unknown name returns **404**; a param missing from the command templa
 
 `process_monitor.py` runs a 1s loop and sets each configured process to:
 
-- **`running`** — tmux window exists **and** a ROS node named like the process is visible on the DDS domain
-- **`started`** — window exists but no matching ROS node (still booting, crashed, or *node name ≠ process name* — see the gotcha below)
-- **`error`** — only for `ur20` (safety mode) and `nex10` (controller manager hardware state), via dedicated topic subscriptions
-- **`stopped`** — no window
+- **`stopped`** — idle, or explicitly stopped through `/stop_process`. This remains idle even if a matching external ROS node is visible.
+- **`started`** — set immediately by `/start_process`; waits for the matching ROS node to appear.
+- **`running`** — the matching ROS node is visible on the DDS domain.
+- **`error`** — a node that was previously visible has disappeared. This persists until the node returns (`running`), the process is explicitly stopped (`stopped`), or a new launch is made (`started`).
+
+Node names are matched exactly, in any namespace. `ur20` watches `ur_robot_manager`, and `nex10` watches `ynx_robot_manager`. Every other process watches a node with the same name as its process key. No robot status topics are subscribed to.
+
+Existing tmux windows are adopted on backend startup. Once a process has been started, losing its tmux window does not reset it to idle; its state follows the node lifecycle until an explicit Stop. A process whose node has never appeared stays `started` (there is no startup timeout). Repeated Start requests for an existing window leave its current state unchanged. Lifecycle history is kept in memory and resets on backend restart.
 
 ## Config-driven commands
 
@@ -62,21 +66,29 @@ No Python changes needed. Process name = tmux window name = status key = fronten
 2. `rgt_desk_backend/config.json` — entry with a `command` template
 3. `rgt_desk_frontend/src/config/panels.json` — panel entry under the right tab; param `key`s must match the `{placeholder}`s
 
-**Gotcha:** for status to reach `running`, the ROS node launched by the script must be *named* like the process (tmux window name). If it never matches, the card stays yellow (`started`) forever.
+**Gotcha:** except for the UR20/NEX10 manager-node mappings above, the ROS node launched by the script must be *named* like the process (tmux window name) for status to reach `running`. If it never matches, the card stays yellow (`started`) forever.
+
+## Verification
+
+From `rgt_desk_backend/`, with ROS 2 Jazzy sourced and backend dependencies available:
+
+```sh
+.venv/bin/python -m unittest discover -s tests -v
+```
+
+These tests simulate ROS graph observations and tmux operations; they do not launch robot processes.
 
 ## Running locally
 
-The backend must run from inside `rgt_desk_backend/`: imports are flat and commands invoke `../process_scripts/...` relative to the working directory.
+Source your ROS 2 environment, then run from the repository root:
 
 ```sh
-source /opt/ros/jazzy/setup.bash
-source ~/repos/ros2_ws/install/setup.bash   # ur_dashboard_msgs, controller_manager_msgs
-cd rgt_desk_backend
-source .venv/bin/activate                   # created by ./install.sh
-uvicorn main:app --host 0.0.0.0 --port 8000
+./rgt_desk_backend/run.sh
 ```
 
-`requirements.txt` (fastapi, uvicorn, libtmux) is not enough on its own — `rclpy`, `ur_dashboard_msgs`, and `controller_manager_msgs` come from the ROS 2 installation.
+The script changes to the backend directory, creates or reuses `.venv` with system packages visible, installs `requirements.txt`, and starts uvicorn. Defaults: `BIND_HOST=0.0.0.0`, `PORT=8000`, `ROS_DOMAIN_ID=19`; existing values are respected. Extra arguments go to uvicorn (for example `--reload`).
+
+ROS 2 Jazzy, Python/venv, tmux, and `rclpy` must already be installed.
 
 ## Deployment
 

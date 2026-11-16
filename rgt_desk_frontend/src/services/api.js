@@ -9,10 +9,10 @@ const apiClient = axios.create({
 
 export default {
   getStatus() {
-    return apiClient.get('/get_status');
+    return apiClient.get('/get_status', { timeout: 5000 });
   },
   getLogs() {
-    return apiClient.get('/get_logs');
+    return apiClient.get('/get_logs', { timeout: 5000 });
   },
   startProcess(name, params = {}) {
     return apiClient.post('/start_process', { name, params });

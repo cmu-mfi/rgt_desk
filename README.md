@@ -12,7 +12,7 @@ A dashboard for starting/stopping robot processes and calling robot services. A 
 
 # Dependencies
 
-- **ROS 2 Jazzy** — the backend imports `rclpy`, `ur_dashboard_msgs`, and `controller_manager_msgs`, which come from the ROS install, and it sources `~/repos/ros2_ws/install/setup.bash` at startup, so that workspace must exist on the target machine.
+- **ROS 2 Jazzy** — the backend imports `rclpy`. Install ROS 2 Jazzy and source the ROS environment before running the backend manually.
 - **tmux** — managed processes run as windows in the `rgt` tmux session.
 - **Python 3** with the `venv` module.
 - **Node.js** `^22.18.0 || >=24.12.0` — nvm or a system package both work; `./install.sh` makes the active one visible to systemd. Recommended via nvm:
@@ -54,21 +54,17 @@ journalctl -u rgt_desk_frontend.service -f
 
 ### Running without systemd (development)
 
-Backend — run from inside `rgt_desk_backend/` (imports are flat and process scripts are invoked via relative paths), with the ROS environment sourced:
+From the repository root, run each script in a separate terminal. Source your ROS 2 environment before starting the backend:
 ```bash
-cd ~/repos/rgt_desk/rgt_desk_backend
-source .venv/bin/activate
-source /opt/ros/jazzy/setup.bash
-source ~/repos/ros2_ws/install/setup.bash
-uvicorn main:app --host 0.0.0.0 --port 8000
+./rgt_desk_backend/run.sh
+./rgt_desk_frontend/run.sh
 ```
 
-Frontend — hot-reload dev server:
-```bash
-cd ~/repos/rgt_desk/rgt_desk_frontend
-npm install
-npm run dev
-```
+The backend creates or reuses `.venv`, installs `requirements.txt`, and starts uvicorn. ROS 2 and its message packages, Python with venv support, and tmux must already be installed. The virtual environment includes system packages so ROS Python dependencies remain available.
+
+The frontend requires Node.js/npm, installs dependencies with `npm ci`, builds the app, and serves it at **http://localhost:5173**. The backend defaults to port **8000** and `ROS_DOMAIN_ID=19`. Both bind to `0.0.0.0`; override `BIND_HOST` or `PORT` per command, for example `PORT=8080 ./rgt_desk_frontend/run.sh`. Extra arguments go to uvicorn or Vite preview. Stop either with Ctrl-C.
+
+For frontend hot reload, run `npm run dev -- --host 0.0.0.0` from `rgt_desk_frontend/` after the first setup.
 
 # Update
 

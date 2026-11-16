@@ -52,7 +52,7 @@ def get_logs(name: str, lines: int = 100) -> list[str]:
     pane = window.active_pane
     if not pane:
         return []
-    result = pane.cmd_capture_pane(start=f"-{lines}")
+    result = pane.capture_pane(start=f"-{lines}")
     out = getattr(result, "stdout", result)
     if isinstance(out, str):
         return out.splitlines()
