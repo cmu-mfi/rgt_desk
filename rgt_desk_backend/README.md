@@ -41,7 +41,7 @@ Errors: an unknown name returns **404**; a param missing from the command templa
 - **`running`** — the matching ROS node is visible on the DDS domain.
 - **`error`** — a node that was previously visible has disappeared. This persists until the node returns (`running`), the process is explicitly stopped (`stopped`), or a new launch is made (`started`).
 
-Node names are matched exactly, in any namespace. `ur20` watches `ur_robot_manager`, and `nex10` watches `ynx_robot_manager`. Every other process watches a node with the same name as its process key. No robot status topics are subscribed to.
+Node names are matched exactly, in any namespace. Each process's `node_name` in `config.json` selects the ROS node to watch; if omitted, it defaults to the process key. For example, `ur20` watches `ur_robot_manager`, `nex10` watches `ynx_robot_manager`, and `bed_side_cam` watches `cam_watch`. No robot status topics are subscribed to.
 
 Existing tmux windows are adopted on backend startup. Once a process has been started, losing its tmux window does not reset it to idle; its state follows the node lifecycle until an explicit Stop. A process whose node has never appeared stays `started` (there is no startup timeout). Repeated Start requests for an existing window leave its current state unchanged. Lifecycle history is kept in memory and resets on backend restart.
 
@@ -50,11 +50,15 @@ Existing tmux windows are adopted on backend startup. Once a process has been st
 `config.json` holds one `command` template per process/service; `process_config.py` fills its `{placeholder}`s with the request's params:
 
 ```json
-"nex10": { "command": "../process_scripts/nex10.sh {use_mock_hardware} {use_ft_sensor}" }
+"nex10": {
+  "node_name": "ynx_robot_manager",
+  "command": "../process_scripts/nex10.sh {use_mock_hardware} {use_ft_sensor}"
+}
 ```
 
 - Values are stringified then `shlex.quote`d: `true` → `"True"`, numbers as-is.
 - An optional `"coerce"` map forces `"float"` (`str(float(v))`) or `"int"` — use `float` where a script needs a decimal literal for a ros2 double param (JSON/JS does not distinguish `100` from `100.0`).
+- A process's optional `"node_name"` selects the exact ROS node name used for status checks, without a namespace. It defaults to the process key and does not rename the launched node.
 - The config is read at startup — restart the backend to apply changes.
 - The module is stdlib-only (no ROS imports), so command construction can be tested anywhere.
 
@@ -63,10 +67,10 @@ Existing tmux windows are adopted on backend startup. Once a process has been st
 No Python changes needed. Process name = tmux window name = status key = frontend id = `config.json` key:
 
 1. `process_scripts/<name>.sh` (or `service_scripts/<name>.sh`) — `chmod +x`
-2. `rgt_desk_backend/config.json` — entry with a `command` template
+2. `rgt_desk_backend/config.json` — entry with a `command` template and a `node_name` matching the ROS node to monitor
 3. `rgt_desk_frontend/src/config/panels.json` — panel entry under the right tab; param `key`s must match the `{placeholder}`s
 
-**Gotcha:** except for the UR20/NEX10 manager-node mappings above, the ROS node launched by the script must be *named* like the process (tmux window name) for status to reach `running`. If it never matches, the card stays yellow (`started`) forever.
+**Gotcha:** the configured `node_name` must match a ROS node launched by the script for status to reach `running`. If it never matches, the card stays yellow (`started`) forever.
 
 ## Verification
 

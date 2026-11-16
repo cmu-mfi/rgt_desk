@@ -1,45 +1,59 @@
 {
   "processes": {
     "ur20": {
+      "node_name": "ur_robot_manager",
       "command": "../process_scripts/ur20.sh {use_mock_hardware}"
     },
     "nex10": {
+      "node_name": "ynx_robot_manager",
       "command": "../process_scripts/nex10.sh {use_mock_hardware} {use_ft_sensor}"
     },
     "rgt_manager": {
+      "node_name": "rgt_manager",
       "command": "../process_scripts/rgt_manager.sh"
     },
     "foxglove_bridge": {
+      "node_name": "foxglove_bridge",
       "command": "../process_scripts/foxglove_bridge.sh"
     },
     "spacemouse": {
+      "node_name": "spacemouse",
       "command": "../process_scripts/spacemouse.sh {ns}"
     },
     "bed_side_cam": {
+      "node_name": "cam_watch",
       "command": "../process_scripts/bed_side_cam.sh"
     },
     "bed_side_thermal": {
+      "node_name": "bed_side_thermal",
       "command": "../process_scripts/bed_side_thermal.sh"
     },
     "bed_side_audio": {
+      "node_name": "bed_side_audio",
       "command": "../process_scripts/bed_side_audio.sh"
     },
     "tool_side_cam": {
+      "node_name": "tool_side_cam",
       "command": "../process_scripts/tool_side_cam.sh"
     },
     "tool_side_gelsight": {
+      "node_name": "tool_side_gelsight",
       "command": "../process_scripts/tool_side_gelsight.sh"
     },
     "gripper": {
+      "node_name": "robotiqgripperhardwareinterface",
       "command": "../process_scripts/gripper.sh {use_mock_hardware}"
     },
     "panda": {
+      "node_name": "panda",
       "command": "../process_scripts/panda.sh"
     },
     "space_panda_link": {
+      "node_name": "space_panda_link",
       "command": "../process_scripts/space_panda_link.sh"
     },
     "rosbag_record": {
+      "node_name": "rosbag_record",
       "command": "../process_scripts/rosbag_record.sh {name}"
     }
   },

@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import Mock, patch
 
 import api
+import process_config
 from models import StartProcessRequest, StopProcessRequest
 from process_monitor import ProcessMonitor
 
@@ -45,7 +46,7 @@ class ProcessMonitorTests(unittest.TestCase):
     def test_each_process_tracks_node_appearance_loss_and_recovery(self):
         for name in self.monitor.status:
             with self.subTest(process=name):
-                node_name = self.monitor.NODE_NAMES.get(name, name)
+                node_name = process_config.process_node_name(name)
                 self.monitor.start_process(name, "launch")
                 self.assertEqual(self.observe((node_name, "/cell"))[name], "running")
                 self.assertEqual(self.observe()[name], "error")
@@ -59,6 +60,26 @@ class ProcessMonitorTests(unittest.TestCase):
             ("other_node", "/rgt_manager"),
         )
         self.assertEqual(states["rgt_manager"], "started")
+
+    def test_configured_node_name_overrides_process_name(self):
+        with patch.dict(
+            process_config._PROCESS_COMMANDS,
+            {"rgt_manager": {"node_name": "custom_manager"}},
+        ):
+            self.monitor.start_process("rgt_manager", "launch")
+            self.assertEqual(self.observe(("rgt_manager", "/"))["rgt_manager"], "started")
+            self.assertEqual(
+                self.observe(("custom_manager_helper", "/custom_manager"))["rgt_manager"],
+                "started",
+            )
+            self.assertEqual(self.observe(("custom_manager", "/cell"))["rgt_manager"], "running")
+            self.assertEqual(self.observe()["rgt_manager"], "error")
+            self.assertEqual(self.observe(("custom_manager", "/cell"))["rgt_manager"], "running")
+
+    def test_missing_node_name_defaults_to_process_name(self):
+        with patch.dict(process_config._PROCESS_COMMANDS, {"rgt_manager": {}}):
+            self.monitor.start_process("rgt_manager", "launch")
+            self.assertEqual(self.observe(("rgt_manager", "/cell"))["rgt_manager"], "running")
 
     def test_robots_require_manager_nodes(self):
         for name in ("ur20", "nex10"):

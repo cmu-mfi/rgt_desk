@@ -84,3 +84,8 @@ def build_command(kind, name, params):
 def process_names():
     """Names of all configured processes (tmux window / status keys)."""
     return list(_PROCESS_COMMANDS)
+
+
+def process_node_name(name):
+    """ROS node to monitor, defaulting to the process key when omitted."""
+    return _PROCESS_COMMANDS[name].get("node_name", name)

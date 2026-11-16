@@ -6,11 +6,6 @@ import tmux
 import process_config
 
 class ProcessMonitor():
-    NODE_NAMES = {
-        "ur20": "ur_robot_manager",
-        "nex10": "ynx_robot_manager",
-    }
-
     def __init__(self):
         self.status = {name: "stopped" for name in process_config.process_names()}
         self.stop_event = threading.Event()
@@ -54,7 +49,7 @@ class ProcessMonitor():
                         continue
                     # Adopt processes already in tmux when the backend starts.
                     status = "started"
-                node_name = self.NODE_NAMES.get(process_name, process_name)
+                node_name = process_config.process_node_name(process_name)
                 if node_name in node_names:
                     self.status[process_name] = "running"
                 elif status in ("running", "error"):
