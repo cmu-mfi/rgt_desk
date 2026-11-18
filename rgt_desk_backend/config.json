@@ -27,11 +27,11 @@
       "command": "../process_scripts/bed_side_cam.sh"
     },
     "bed_side_thermal": {
-      "node_name": "bed_side_thermal",
+      "node_name": "seek_thermal_driver",
       "command": "../process_scripts/bed_side_thermal.sh"
     },
     "bed_side_audio": {
-      "node_name": "bed_side_audio",
+      "node_name": "sounddevice_publisher",
       "command": "../process_scripts/bed_side_audio.sh"
     },
     "tool_side_cam": {
