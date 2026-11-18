@@ -8,7 +8,8 @@
       { "label": "None", "value": "" },
       { "label": "Sander", "value": "sander" },
       { "label": "Grinder", "value": "grinder" },
-      { "label": "Gelsight Vision", "value": "gelsight_vision" }
+      { "label": "Gelsight Vision", "value": "gelsight_vision" },
+      { "label": "Gripper", "value": "gripper" }
     ],
     "locations": [
       { "label": "Tray", "value": "tray" },
