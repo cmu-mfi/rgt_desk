@@ -66,6 +66,25 @@ The frontend requires Node.js/npm, installs dependencies with `npm ci`, builds t
 
 For frontend hot reload, run `npm run dev -- --host 0.0.0.0` from `rgt_desk_frontend/` after the first setup.
 
+### Embedded Foxglove viewer
+
+The **Foxglove** tab embeds the official Foxglove viewer. It requires an embedding-enabled Foxglove organization (such as Pro, Academic, or Enterprise) and internet access to `https://embed.foxglove.dev/`. See the [Foxglove embedding guide](https://docs.foxglove.dev/docs/embed/typescript-sdk).
+
+1. Open RGT Desk through **localhost** on the robot host, or through **HTTPS** for LAN access. Ordinary `http://<host-ip>/` access still works for the other tabs; the Foxglove tab explains the secure-context requirement instead of loading a broken viewer.
+2. Start **Foxglove Bridge** on Main. The existing process script starts its normal WebSocket endpoint on port **8765**.
+3. Open **Foxglove**, confirm the bridge URL, optionally enter your Foxglove organization slug, and click **Open viewer** after changing settings. Sign in to your embedding-enabled account inside the viewer. Leaving the organization blank lets you choose one during sign-in.
+
+For localhost access, the default bridge URL is `ws://localhost:8765`. For HTTPS access, the tab defaults to `wss://<page-hostname>:8765`; configure a trusted TLS endpoint for the bridge (for example a WebSocket reverse proxy) and enter its actual URL. The current bridge script does not configure TLS. The browser must be able to reach that endpoint. When serving the frontend over HTTPS, also provide a trusted HTTPS endpoint for the backend on port 8000, which the existing API client derives from the page's protocol and hostname. This change does not configure TLS for the frontend, backend, or bridge.
+
+Connection settings are remembered in this browser when storage is available, and Foxglove stores layout edits under the `rgt-desk` layout key. Opening the tab loads the viewer; leaving it releases the iframe and its connection without stopping the ROS bridge. With a compatible viewer, the SDK keeps the WebSocket in RGT Desk's browser context. Older viewers can connect directly to `wss://` endpoints; local `ws://` connections require parent-owned transport support.
+
+To set deployment defaults, put these optional public build settings in `rgt_desk_frontend/.env.local` and rebuild. Browser-saved settings take precedence. These values are not secrets; authentication stays in Foxglove.
+
+```dotenv
+VITE_FOXGLOVE_ORG_SLUG=your-organization
+VITE_FOXGLOVE_BRIDGE_URL=wss://desk.example.org/foxglove-bridge
+```
+
 # Update
 
 The frontend service runs `npm install` and `npm run build` on every start, so no manual build is needed — a restart picks up all changes. Startup can take up to 2 minutes while it rebuilds.

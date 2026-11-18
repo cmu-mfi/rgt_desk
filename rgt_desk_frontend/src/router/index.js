@@ -12,6 +12,7 @@ const router = createRouter({
     { path: '/main', name: 'main', component: MainTab },
     { path: '/sensors', name: 'sensors', component: SensorsTab },
     { path: '/tools', name: 'tools', component: ToolsTab },
+    { path: '/foxglove', name: 'foxglove', component: () => import('../views/FoxgloveTab.vue') },
     { path: '/utilities', name: 'utilities', component: UtilitiesTab },
     { path: '/space_panda', name: 'space_panda', component: SpacePandaTab },
   ]
