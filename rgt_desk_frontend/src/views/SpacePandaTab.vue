@@ -6,5 +6,5 @@ const tab = panelsConfig.tabs.space_panda;
 </script>
 
 <template>
-  <PanelGrid :panels="tab.panels" :columns="tab.columns" />
+  <PanelGrid :panels="tab.panels" :columns="tab.columns" :show-logs="tab.logs ?? false" />
 </template>

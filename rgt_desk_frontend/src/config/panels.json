@@ -8,7 +8,8 @@
       { "label": "None", "value": "" },
       { "label": "Sander", "value": "sander" },
       { "label": "Grinder", "value": "grinder" },
-      { "label": "Gelsight Vision", "value": "gelsight_vision" }
+      { "label": "Gelsight", "value": "gelsight_vision" },
+      { "label": "Gripper", "value": "gripper" }
     ],
     "locations": [
       { "label": "Tray", "value": "tray" },
@@ -103,7 +104,13 @@
           "title": "Bed Side Audio",
           "description": "Start the Bed Side Audio System.",
           "params": []
-        },
+        }
+      ]
+    },
+    "tools": {
+      "columns": 3,
+      "logs": true,
+      "panels": [
         {
           "type": "process",
           "id": "gripper",
@@ -126,6 +133,15 @@
           "title": "Tool Side Gelsight",
           "description": "Start the Tool Side Gelsight.",
           "params": []
+        },
+        {
+          "type": "service",
+          "id": "gripper_command",
+          "title": "Gripper Command",
+          "description": "Move the gripper to a position from 0 to 1.",
+          "params": [
+            { "key": "position", "type": "slider", "label": "Position", "min": 0, "max": 1, "step": 0.01, "default": 0 }
+          ]
         }
       ]
     },
@@ -161,7 +177,7 @@
           "note": "None: return current tool only.",
           "params": [
             { "key": "robot", "type": "select", "label": "Robot", "options": "robots" },
-            { "key": "tool", "type": "select", "label": "Tool", "options": "tools" }
+            { "key": "tool", "type": "select", "label": "Tool", "options": "tools", "display": "segmented" }
           ]
         },
         {
@@ -171,7 +187,7 @@
           "description": "Override the location of a specific tool.",
           "note": "Updates TF ownership only; no physical tool change.",
           "params": [
-            { "key": "tool", "type": "select", "label": "Tool", "options": "tools" },
+            { "key": "tool", "type": "select", "label": "Tool", "options": "tools", "display": "segmented" },
             { "key": "location", "type": "select", "label": "Location", "options": "locations" }
           ]
         },
@@ -208,6 +224,7 @@
     },
     "space_panda": {
       "columns": 2,
+      "logs": true,
       "panels": [
         {
           "type": "process",

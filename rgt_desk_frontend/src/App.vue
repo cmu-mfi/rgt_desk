@@ -2,12 +2,13 @@
 import { onMounted, onUnmounted } from 'vue';
 import { RouterLink, RouterView } from 'vue-router';
 import { useStore } from './stores/store';
-import { Hexagon, LayoutDashboard, Panda, Radio, Toolbox } from '@lucide/vue';
+import { Hexagon, LayoutDashboard, Panda, Radio, Toolbox, Wrench } from '@lucide/vue';
 
 const store = useStore();
 const links = [
   { to: '/main', label: 'Main', icon: LayoutDashboard },
-  { to: '/sensors', label: 'Sensors & Tools', icon: Radio },
+  { to: '/sensors', label: 'Sensors', icon: Radio },
+  { to: '/tools', label: 'Tools', icon: Wrench },
   { to: '/utilities', label: 'Utilities', icon: Toolbox },
   { to: '/space_panda', label: 'Space Panda', icon: Panda },
 ];

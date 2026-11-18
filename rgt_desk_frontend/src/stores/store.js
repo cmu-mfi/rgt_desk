@@ -45,6 +45,8 @@ export const useStore = defineStore('store', {
     process_logs: {
     },
     service_status: buildInitialServiceStatus(),
+    service_logs: {},
+    serviceRevision: 0,
     configs: buildInitialConfigs(),
     connection: 'connecting',
     pending: {},
@@ -57,9 +59,12 @@ export const useStore = defineStore('store', {
     async fetchStatus() {
       if (this.fetchingStatus) return;
       this.fetchingStatus = true;
+      const serviceRevision = this.serviceRevision;
       try {
-        const response = await api.getStatus();
-        this.process_status = response.data;
+        const [processes, services] = await Promise.all([api.getStatus(), api.getServiceStatus()]);
+        this.process_status = processes.data;
+        // Ignore snapshots taken before a start/cancel request changed state.
+        if (serviceRevision === this.serviceRevision) this.service_status = services.data;
         this.connection = 'connected';
       } catch (error) {
         this.connection = 'disconnected';
@@ -72,8 +77,9 @@ export const useStore = defineStore('store', {
       if (this.fetchingLogs) return;
       this.fetchingLogs = true;
       try {
-        const response = await api.getLogs();
-        this.process_logs = response.data;
+        const [processes, services] = await Promise.all([api.getLogs(), api.getServiceLogs()]);
+        this.process_logs = processes.data;
+        this.service_logs = services.data;
       } catch (error) {
         console.error("Failed to fetch logs from backend:", error);
       } finally {
@@ -114,7 +120,6 @@ export const useStore = defineStore('store', {
       delete this.feedback[id];
       try {
         await api.startProcess(id, configData);
-        this.feedback[id] = { text: 'Launch requested.' };
         await this.fetchStatus();
       } catch (error) {
         this.setActionError(id, error);
@@ -129,7 +134,6 @@ export const useStore = defineStore('store', {
       delete this.feedback[id];
       try {
         await api.stopProcess(id);
-        this.feedback[id] = { text: 'Stop requested.' };
         await this.fetchStatus();
       } catch (error) {
         this.setActionError(id, error);
@@ -139,17 +143,38 @@ export const useStore = defineStore('store', {
     },
 
     async executeService(id, configData = this.configs[id] || {}) {
-      if (this.service_status[id] === 'executing' || this.connection !== 'connected' || !this.configValid(id)) return;
-      this.service_status[id] = 'executing';
+      if (this.pending[id] || this.service_status[id] === 'executing' || this.connection !== 'connected' || !this.configValid(id)) return;
+      this.pending[id] = 'execute';
+      this.serviceRevision++;
       delete this.feedback[id];
       try {
         const response = await api.executeService(id, configData);
-        if (response.data.status === 'failed') throw new Error('The backend reported that the request failed.');
-        this.feedback[id] = { text: 'Backend request completed.' };
+        this.service_status[id] = response.data.status;
       } catch (error) {
         this.setActionError(id, error);
       } finally {
-        this.service_status[id] = 'idle';
+        this.serviceRevision++;
+        delete this.pending[id];
+        await this.fetchStatus();
+        this.fetchLogs();
+      }
+    },
+
+    async cancelService(id) {
+      if (this.pending[id] || this.service_status[id] !== 'executing' || this.connection !== 'connected') return;
+      this.pending[id] = 'cancel';
+      this.serviceRevision++;
+      delete this.feedback[id];
+      try {
+        const response = await api.cancelService(id);
+        this.service_status[id] = response.data.status;
+      } catch (error) {
+        this.setActionError(id, error);
+      } finally {
+        this.serviceRevision++;
+        delete this.pending[id];
+        await this.fetchStatus();
+        this.fetchLogs();
       }
     },
 

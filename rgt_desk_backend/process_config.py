@@ -21,6 +21,7 @@ empty strings are left empty, matching the previous hand-written behavior.
 """
 
 import json
+import math
 import re
 import shlex
 from pathlib import Path
@@ -36,6 +37,10 @@ class UnknownNameError(Exception):
 
 class MissingParamError(Exception):
     """The command template needs a param the request did not provide."""
+
+
+class InvalidParamError(ValueError):
+    """A parameter cannot be converted or is outside its configured bounds."""
 
 
 def _load_config(path):
@@ -62,7 +67,8 @@ def build_command(kind, name, params):
     `kind` is "process" or "service", `name` the configured id, `params` the
     request's param dict (or None). Raises UnknownNameError for an
     unconfigured name and MissingParamError when a {placeholder} in the
-    template has no matching param.
+    template has no matching param. Raises InvalidParamError for invalid
+    numeric values or values outside an optional `bounds` map.
     """
     entries = _PROCESS_COMMANDS if kind == "process" else _SERVICE_COMMANDS
     entry = entries.get(name)
@@ -76,7 +82,24 @@ def build_command(kind, name, params):
             raise MissingParamError(
                     f"{_LABELS[kind]} '{name}' is missing param '{key}'."
                     )
-        s = _coerce(params[key], coerce.get(key))
+        value = params[key]
+        bounds = entry.get("bounds", {}).get(key)
+        if bounds is not None:
+            try:
+                number = float(value)
+                valid = (not isinstance(value, bool) and math.isfinite(number)
+                         and bounds["min"] <= number <= bounds["max"])
+            except (TypeError, ValueError, OverflowError):
+                valid = False
+            if not valid:
+                raise InvalidParamError(
+                    f"Param '{key}' must be a finite number between "
+                    f"{bounds['min']} and {bounds['max']}."
+                )
+        try:
+            s = _coerce(value, coerce.get(key))
+        except (TypeError, ValueError, OverflowError) as error:
+            raise InvalidParamError(f"Param '{key}' has an invalid numeric value.") from error
         values[key] = shlex.quote(s) if s else s
     return entry["command"].format(**values)
 
@@ -86,6 +109,16 @@ def process_names():
     return list(_PROCESS_COMMANDS)
 
 
+def service_names():
+    """Names of all configured one-shot services."""
+    return list(_SERVICE_COMMANDS)
+
+
 def process_node_name(name):
     """ROS node to monitor, defaulting to the process key when omitted."""
     return _PROCESS_COMMANDS[name].get("node_name", name)
+
+
+def process_ready_topic(name):
+    """Optional Bool topic whose false value overrides a visible node's status."""
+    return _PROCESS_COMMANDS[name].get("ready_topic")

@@ -1,0 +1,10 @@
+<script setup>
+import PanelGrid from '../components/PanelGrid.vue';
+import panelsConfig from '../config/panels.json';
+
+const tab = panelsConfig.tabs.tools;
+</script>
+
+<template>
+  <PanelGrid :panels="tab.panels" :columns="tab.columns" :show-logs="tab.logs ?? false" />
+</template>

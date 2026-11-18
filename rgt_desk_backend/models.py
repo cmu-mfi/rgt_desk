@@ -63,5 +63,14 @@ class ProcessStopResponse(BaseModel):
 
 
 class ServiceExecutionResponse(BaseModel):
-    status: Literal["executed", "failed"]
+    status: Literal["executing"]
+    name: str
+
+
+class CancelServiceRequest(BaseModel):
+    name: str = Field(..., description="Service id from config.json's `services`.")
+
+
+class ServiceStatusResponse(BaseModel):
+    status: Literal["idle", "executing"]
     name: str

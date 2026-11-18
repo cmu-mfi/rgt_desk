@@ -2,10 +2,12 @@
   "processes": {
     "ur20": {
       "node_name": "ur_robot_manager",
+      "ready_topic": "/ur20/ready",
       "command": "../process_scripts/ur20.sh {use_mock_hardware}"
     },
     "nex10": {
       "node_name": "ynx_robot_manager",
+      "ready_topic": "/nex10/ready",
       "command": "../process_scripts/nex10.sh {use_mock_hardware} {use_ft_sensor}"
     },
     "rgt_manager": {
@@ -58,6 +60,11 @@
     }
   },
   "services": {
+    "gripper_command": {
+      "command": "../service_scripts/gripper_command.sh {position}",
+      "coerce": { "position": "float" },
+      "bounds": { "position": { "min": 0, "max": 1 } }
+    },
     "home": {
       "command": "../service_scripts/home.sh {ns} {speed}"
     },

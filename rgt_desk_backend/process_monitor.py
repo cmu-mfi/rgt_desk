@@ -1,13 +1,17 @@
 import threading
 import subprocess
+from functools import partial
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
+from std_msgs.msg import Bool
 import tmux
 import process_config
 
 class ProcessMonitor():
     def __init__(self):
         self.status = {name: "stopped" for name in process_config.process_names()}
+        self._ready = {name: None for name in self.status}
         self.stop_event = threading.Event()
         self._lock = threading.Lock()
         self._thread = None
@@ -26,6 +30,7 @@ class ProcessMonitor():
         monitor_node = Node('rgt_desk')
 
         try:
+            self._setup_readiness_subscriptions(monitor_node)
             while not self.stop_event.is_set() and rclpy.ok():
                 self._update_status(monitor_node)
                 rclpy.spin_once(monitor_node, timeout_sec=0.1)
@@ -34,6 +39,25 @@ class ProcessMonitor():
         finally:
             monitor_node.destroy_node()
             rclpy.shutdown()
+
+    def _setup_readiness_subscriptions(self, monitor_node):
+        # Match the managers' retained status so backend restarts receive the
+        # current value even when readiness has not changed recently.
+        qos = QoSProfile(
+            depth=1,
+            reliability=ReliabilityPolicy.RELIABLE,
+            durability=DurabilityPolicy.TRANSIENT_LOCAL,
+        )
+        for name in self.status:
+            topic = process_config.process_ready_topic(name)
+            if topic:
+                monitor_node.create_subscription(
+                    Bool, topic, partial(self._readiness_callback, name), qos
+                )
+
+    def _readiness_callback(self, name, msg):
+        with self._lock:
+            self._ready[name] = msg.data
 
     def _update_status(self, monitor_node):
         # Serialize graph snapshots with start/stop so stale observations cannot
@@ -51,7 +75,9 @@ class ProcessMonitor():
                     status = "started"
                 node_name = process_config.process_node_name(process_name)
                 if node_name in node_names:
-                    self.status[process_name] = "running"
+                    self.status[process_name] = (
+                        "error" if self._ready[process_name] is False else "running"
+                    )
                 elif status in ("running", "error"):
                     self.status[process_name] = "error"
                 else:

@@ -48,6 +48,7 @@ function resolveOptions(param) {
     :model-value="modelValue"
     :label="param.label"
     :options="resolveOptions(param)"
+    :display="param.display"
     @update:modelValue="$emit('update:modelValue', $event)"
   />
   <TextInput

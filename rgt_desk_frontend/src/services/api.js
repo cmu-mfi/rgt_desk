@@ -14,6 +14,12 @@ export default {
   getLogs() {
     return apiClient.get('/get_logs', { timeout: 5000 });
   },
+  getServiceStatus() {
+    return apiClient.get('/get_service_status', { timeout: 5000 });
+  },
+  getServiceLogs() {
+    return apiClient.get('/get_service_logs', { timeout: 5000 });
+  },
   startProcess(name, params = {}) {
     return apiClient.post('/start_process', { name, params });
   },
@@ -22,5 +28,8 @@ export default {
   },
   executeService(name, params = {}) {
     return apiClient.post('/execute_service', { name, params });
+  },
+  cancelService(name) {
+    return apiClient.post('/cancel_service', { name });
   },
 };

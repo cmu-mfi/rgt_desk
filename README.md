@@ -50,7 +50,7 @@ Note: the backend service sets `ROS_DOMAIN_ID=19`. If your robots use a differen
 journalctl -u rgt_desk_backend.service -f
 journalctl -u rgt_desk_frontend.service -f
 ```
-- **Watch the managed processes:** `tmux attach -t rgt` (Ctrl-b n to switch windows).
+- **Watch managed processes and service calls:** `tmux attach -t rgt` (Ctrl-b n to switch windows). Service calls use `service-<name>` windows that close after completion or cancellation. Their logs disappear when the window closes. The dashboard's service cards also provide live **Logs**, call status, and **Cancel call**. Cancellation stops the local client; the ROS server may continue work it has already accepted.
 
 ### Running without systemd (development)
 
@@ -90,7 +90,7 @@ No Python changes needed. The name is the glue: the script name, the tmux window
 ros2 launch sick_scan sick_scan.launch.py ns:=lidar
 ```
 ```bash
-# service_scripts/grip.sh — one-shot: runs and exits
+# service_scripts/grip.sh — one-shot: runs in service-grip; window closes after exit
 ros2 service call /$1/grip robot_manager_interfaces/srv/Grip "{force: $2}"
 ```
 
@@ -115,6 +115,10 @@ A process only shows `running` once its tmux window exists *and* a matching ROS 
 ```
 
 Param types: `toggle`, `slider` (`min`/`max`/`step`), and `select` (`options` is either the name of a shared option set defined in `panels.json`, like `robots`, or an inline `[{label, value}]` array). The panel's `default` fields become the store's initial values. No other frontend code is needed — the card, its controls, and its defaults are all generated from the config.
+
+Select controls use side-by-side buttons for up to four options by default. Add `"display": "segmented"` to keep the buttons as the option list grows; they wrap to fit the panel. Both tool selectors use this setting.
+
+To reassign panes, move their complete objects between `tabs.main.panels`, `tabs.sensors.panels`, `tabs.tools.panels`, `tabs.utilities.panels`, and `tabs.space_panda.panels` in `rgt_desk_frontend/src/config/panels.json`. Array order controls display order. Keep each pane's `id` unchanged and unique across tabs; its parameters, defaults, actions, and status follow it automatically. Each tab also sets its own `columns` and `logs`. Tools starts empty so you can choose its contents. Rebuild the frontend after editing when using the preview server; Vite development mode reloads automatically.
 
 **4. Restart both services** (as shown above) to pick up the backend and frontend changes.
 
