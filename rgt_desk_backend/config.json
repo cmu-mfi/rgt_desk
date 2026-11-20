@@ -47,7 +47,7 @@
       "command": "../process_scripts/gripper.sh {use_mock_hardware}"
     },
     "panda": {
-      "node_name": "panda",
+      "node_name": "frankahardwareinterface",
       "command": "../process_scripts/panda.sh"
     },
     "space_panda_link": {
