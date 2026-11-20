@@ -1,3 +1,2 @@
 #!/bin/bash
-
-/home/mfi/repos/ros2_ws/src/sounddevice_ros/.venv/bin/python3 /home/mfi/repos/ros2_ws/src/sounddevice_ros/sounddevice_ros/sounddevice_ros_publisher_node.py --namespace bed_side_audio --ros-args -p device:=5
+ros2 launch sounddevice_bringup bringup.launch.py ns:=bed_side_audio device:=5 log_level:=info

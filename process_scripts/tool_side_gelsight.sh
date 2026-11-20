@@ -1,2 +1,2 @@
-ros2 launch gelsight_bringup bringup.launch.py ns:=tool_side_gelsight
+ros2 launch gelsight_bringup bringup.launch.py ns:=tool_side_gelsight log_level:=info
 

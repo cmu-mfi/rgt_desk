@@ -31,7 +31,7 @@
       "command": "../process_scripts/bed_side_thermal.sh"
     },
     "bed_side_audio": {
-      "node_name": "sounddevice_publisher",
+      "node_name": "sounddevice_driver",
       "command": "../process_scripts/bed_side_audio.sh"
     },
     "tool_side_cam": {
@@ -39,7 +39,7 @@
       "command": "../process_scripts/tool_side_cam.sh"
     },
     "tool_side_gelsight": {
-      "node_name": "tool_side_gelsight",
+      "node_name": "gelsight_driver_node",
       "command": "../process_scripts/tool_side_gelsight.sh"
     },
     "gripper": {
